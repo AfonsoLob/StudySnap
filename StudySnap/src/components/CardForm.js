@@ -8,7 +8,9 @@ const CardForm = ({
   onSubmit, 
   onCancel, 
   submitText, 
-  darkMode 
+  darkMode,
+  categories,
+  selectedCategory
 }) => {
   const cardBgClasses = darkMode ? 'bg-gray-700' : 'bg-white';
   const inputClasses = `w-full p-3 border rounded-lg ${
@@ -28,14 +30,19 @@ const CardForm = ({
           <label htmlFor="category" className="block text-sm font-medium mb-2">
             Category
           </label>
-          <input
+          <select
             id="category"
-            type="text"
-            value={card.category}
-            onChange={(e) => setCard({...card, category: e.target.value})}
-            placeholder="e.g., Programming, History, Science..."
+            value={selectedCategory || card.category}
+            onChange={e => setCard({ ...card, category: e.target.value })}
             className={inputClasses}
-          />
+            disabled={!!selectedCategory}
+            required
+          >
+            <option value="">Select a category</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
         
         <div>

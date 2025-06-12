@@ -1,6 +1,5 @@
 // src/components/StudyView.js
 import React from 'react';
-import { CheckCircle, XCircle } from 'lucide-react';
 import StudyCard from './StudyCard';
 import StudyControls from './StudyControls';
 

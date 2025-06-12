@@ -19,6 +19,7 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
         style={{
           transition: 'transform 0.5s',
           transformStyle: 'preserve-3d',
+          transform: isFlipped ? 'rotateX(180deg)' : 'rotateX(0deg)'
         }}
       >
         {/* Front */}
@@ -26,15 +27,19 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
           className={`
             absolute inset-0 flex flex-col items-center justify-center w-full h-full
             backface-hidden
+            px-6 py-8
           `}
+          style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className={`text-sm font-medium mb-4 ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
+          <div className={`text-sm font-medium mb-4 text-center ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
             {card.category}
           </div>
-          <div className="text-xl leading-relaxed mb-4">
-            {card.front}
+          <div className="flex-1 flex items-center justify-center w-full">
+            <div className="text-xl leading-relaxed mb-4 text-center break-words w-full">
+              {card.front}
+            </div>
           </div>
-          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             (Click to reveal answer)
           </div>
         </div>
@@ -42,16 +47,20 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
         <div
           className={`
             absolute inset-0 flex flex-col items-center justify-center w-full h-full
-            backface-hidden rotate-y-180
+            backface-hidden
+            px-6 py-8
           `}
+          style={{ transform: 'rotateX(180deg)', backfaceVisibility: 'hidden' }}
         >
-          <div className={`text-sm font-medium mb-4 ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
+          <div className={`text-sm font-medium mb-4 text-center ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
             {card.category}
           </div>
-          <div className="text-xl leading-relaxed mb-4">
-            {card.back}
+          <div className="flex-1 flex items-center justify-center w-full">
+            <div className="text-xl leading-relaxed mb-4 text-center break-words w-full">
+              {card.back}
+            </div>
           </div>
-          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             (Answer)
           </div>
         </div>
@@ -65,9 +74,6 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
         }
         .backface-hidden {
           backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-          transform: rotateY(180deg);
         }
       `}</style>
     </div>

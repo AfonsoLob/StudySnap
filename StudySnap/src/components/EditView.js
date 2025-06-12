@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import CardForm from './CardForm';
 
-const EditView = ({ darkMode, editingCard, setEditingCard, updateFlashcard, setCurrentView }) => {
+const EditView = ({ darkMode, editingCard, setEditingCard, updateFlashcard, setCurrentView, categories }) => {
   const [card, setCard] = useState({ front: '', back: '', category: '' });
 
   useEffect(() => {
@@ -46,6 +46,8 @@ const EditView = ({ darkMode, editingCard, setEditingCard, updateFlashcard, setC
         onCancel={handleCancel}
         submitText="Update Card"
         darkMode={darkMode}
+        categories={categories}
+        selectedCategory={card.category}
       />
     </div>
   );

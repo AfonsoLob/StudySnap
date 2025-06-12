@@ -2,7 +2,7 @@
 import React from 'react';
 import CardForm from './CardForm';
 
-const CreateView = ({ darkMode, newCard, setNewCard, addFlashcard, setCurrentView }) => {
+const CreateView = ({ darkMode, newCard, setNewCard, addFlashcard, setCurrentView, categories, selectedCategory }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     addFlashcard();
@@ -23,6 +23,8 @@ const CreateView = ({ darkMode, newCard, setNewCard, addFlashcard, setCurrentVie
         onCancel={handleCancel}
         submitText="Create Card"
         darkMode={darkMode}
+        categories={categories}
+        selectedCategory={selectedCategory}
       />
     </div>
   );

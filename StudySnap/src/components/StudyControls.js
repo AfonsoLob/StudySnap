@@ -1,6 +1,5 @@
 // src/components/StudyControls.js
 import React from 'react';
-import { CheckCircle, XCircle } from 'lucide-react';
 
 const StudyControls = ({ 
   isFlipped, 
@@ -45,21 +44,23 @@ const StudyControls = ({
       </div>
       {/* Difficulty Rating Controls - only show when answer is revealed */}
       {isFlipped && (
-        <div className="flex justify-center space-x-4">
-          <button
-            onClick={() => onDifficultyRating('easy')}
-            className={`${buttonBaseClasses} bg-green-500 hover:bg-green-600 text-white`}
-          >
-            <CheckCircle className="inline-block mr-2" />
-            Right
-          </button>
-          <button
-            onClick={() => onDifficultyRating('hard')}
-            className={`${buttonBaseClasses} bg-red-500 hover:bg-red-600 text-white`}
-          >
-            <XCircle className="inline-block mr-2" />
-            Wrong
-          </button>
+        <div className="flex justify-center space-x-2">
+          {[1, 2, 3, 4, 5].map((level) => (
+            <button
+              key={level}
+              onClick={() => onDifficultyRating(level)}
+              className={`${buttonBaseClasses} flex items-center justify-center rounded-3xl ${
+                level === 1 ? 'bg-red-500 hover:bg-red-600' :
+                level === 2 ? 'bg-orange-500 hover:bg-orange-600' :
+                level === 3 ? 'bg-yellow-500 hover:bg-yellow-600' :
+                level === 4 ? 'bg-green-500 hover:bg-green-600' :
+                'bg-blue-500 hover:bg-blue-600'
+              } text-white w-12`}
+              title={`Knowledge level: ${level}`}
+            >
+              {level}
+            </button>
+          ))}
         </div>
       )}
       <div className="flex justify-center">

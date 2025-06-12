@@ -1,8 +1,10 @@
 // src/components/Header.js
 import React from 'react';
-import { BookOpen, Sun, Moon } from 'lucide-react';
+import { BookOpen, Sun, Moon, Settings } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
-const Header = ({ darkMode, toggleDarkMode, setCurrentView }) => {
+const Header = ({ darkMode, toggleDarkMode, setCurrentView, user, onShowSettings }) => {
   const cardBgClasses = darkMode ? 'bg-gray-700' : 'bg-white';
 
   return (
@@ -18,13 +20,35 @@ const Header = ({ darkMode, toggleDarkMode, setCurrentView }) => {
             </div>
             <h1 className="text-2xl font-bold">StudySnap</h1>
           </div>
-          
-          <button
-            onClick={toggleDarkMode}
-            className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'}`}
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'}`}
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            {user && (
+              <>
+                <button
+                  onClick={onShowSettings}
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode
+                      ? 'hover:bg-gray-600'
+                      : 'hover:bg-gray-100'
+                  }`}
+                  title="Settings"
+                >
+                  <Settings className={`w-5 h-5 ${darkMode ? 'text-gray-300' : 'text-gray-500'}`} />
+                </button>
+                <button
+                  onClick={() => signOut(auth)}
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>
