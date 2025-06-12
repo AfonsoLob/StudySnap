@@ -3,14 +3,14 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBNio6Ge_IasoRKv1mOFJpfxbycITIm74k",
-    authDomain: "studysnap-80b93.firebaseapp.com",
-    projectId: "studysnap-80b93",
-    storageBucket: "studysnap-80b93.firebasestorage.app",
-    messagingSenderId: "852353269111",
-    appId: "1:852353269111:web:f06bce810c9f2405c5f572",
-    measurementId: "G-3FSZVHPR2M"
-  };
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+};
 
 const app = initializeApp(firebaseConfig);
 
