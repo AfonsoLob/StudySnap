@@ -27,7 +27,7 @@ StudySnap is a web application for creating, organizing, and studying flashcards
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/your-username/StudySnap.git
+git clone https://github.com/AfonsoLob/StudySnap.git
 cd StudySnap
 npm install
 ```
