@@ -54,7 +54,7 @@ npm test
 npm run build
 ```
 
-## Acknowledgements
+## Technologies Used
 
 - Built with [React](https://reactjs.org/)
 - Bootstrapped with [Create React App](https://create-react-app.dev/)
