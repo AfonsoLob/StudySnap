@@ -1,13 +1,17 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import HomeView from './components/HomeView';
 import CreateView from './components/CreateView';
 import StudyView from './components/StudyView';
 import EditView from './components/EditView';
+import CategoryView from './components/CategoryView';
+import AIModal from './components/AIModal';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from './components/AuthForm';
+import { extractTextFromPDF, generateFlashcards } from './utils/aiUtils';
+import './styles/base.css';
 import {
   collection,
   addDoc,
@@ -34,6 +38,14 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [apiKey, setApiKey] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiText, setAIText] = useState('');
+  const [aiFile, setAIFile] = useState(null);
+  const [aiLoading, setAILoading] = useState(false);
+  const [aiError, setAIError] = useState('');
+  const [aiSuccess, setAISuccess] = useState('');
+  const [modalTop, setModalTop] = useState(0);
+  const settingsModalRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -67,6 +79,51 @@ const App = () => {
     return () => { unsubCat(); unsubCards(); };
   }, [user]);
 
+  // Calculate modal top position based on scroll and window height
+  const updateModalPosition = () => {
+    if (settingsModalRef.current) {
+      const modalHeight = settingsModalRef.current.offsetHeight;
+      const top = window.scrollY + (window.innerHeight / 2) - (modalHeight / 2);
+      setModalTop(Math.max(top, 24)); // Prevent it from going off the top
+    }
+  };
+
+  useEffect(() => {
+    if (showSettings) {
+      updateModalPosition();
+      window.addEventListener('scroll', updateModalPosition);
+      window.addEventListener('resize', updateModalPosition);
+    }
+    return () => {
+      window.removeEventListener('scroll', updateModalPosition);
+      window.removeEventListener('resize', updateModalPosition);
+    };
+  }, [showSettings]);
+
+  // Prevent background scroll when settings modal is open
+  useEffect(() => {
+    if (showSettings) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showSettings]);
+
+  // Close modal on click outside
+  useEffect(() => {
+    if (!showSettings) return;
+    function handleClick(e) {
+      if (settingsModalRef.current && !settingsModalRef.current.contains(e.target)) {
+        setShowSettings(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showSettings]);
+
   if (!user) {
     return <AuthForm user={user} />;
   }
@@ -74,6 +131,7 @@ const App = () => {
   // Toggle dark mode
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+    document.documentElement.setAttribute('data-theme', !darkMode ? 'dark' : 'light');
   };
 
   // Add new category (Firestore)
@@ -174,6 +232,32 @@ const App = () => {
     setApiKey(key);
   };
 
+  // AI flashcard generation handler
+  const handleAIGenerate = async () => {
+    setAILoading(true);
+    setAIError('');
+    setAISuccess('');
+    try {
+      const input = aiFile || aiText;
+      const cards = await generateFlashcards(input, apiKey, selectedCategory);
+      
+      // Add flashcards to Firestore
+      const cardRef = collection(db, 'users', user.uid, 'flashcards');
+      for (const card of cards) {
+        await addDoc(cardRef, card);
+      }
+      
+      setAISuccess(`Created ${cards.length} flashcards!`);
+      setShowAIModal(false);
+      setAIText('');
+      setAIFile(null);
+    } catch (err) {
+      setAIError(err.message);
+    } finally {
+      setAILoading(false);
+    }
+  };
+
   // Common props to pass down
   const commonProps = {
     darkMode,
@@ -188,7 +272,9 @@ const App = () => {
     addCategory,
     deleteCategory,
     apiKey,
-    user
+    user,
+    showAIModal,
+    setShowAIModal
   };
 
   const studyProps = {
@@ -226,7 +312,18 @@ const App = () => {
     : 'bg-gray-50 text-gray-900';
 
   return (
-    <div className={`min-h-screen transition-colors ${themeClasses}`}>
+    <div
+      className={`app-bg min-h-screen transition-colors duration-300 `}
+      style={{
+        // Ensure glassmorphism effect overlays the gradient
+        backgroundColor: darkMode
+          ? 'rgba(31,41,55,0.7)'
+          : 'rgba(255,255,255,0.7)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}
+      data-theme={darkMode ? 'dark' : undefined}
+    >
       <Header 
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
@@ -236,10 +333,18 @@ const App = () => {
       />
 
       {showSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg max-w-md w-full relative">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm" style={{ pointerEvents: 'auto' }}>
+          <div
+            ref={settingsModalRef}
+            className="glass-list p-8 max-w-md w-full absolute left-1/2 flex flex-col items-center justify-center"
+            style={{
+              top: modalTop,
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+          >
             <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl"
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl transition-colors"
               onClick={() => setShowSettings(false)}
             >
               ×
@@ -248,24 +353,40 @@ const App = () => {
             <input
               type="text"
               value={apiKey}
-              onChange={e => setApiKey(e.target.value)}
-              placeholder="Paste your AI API key here"
-              className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+              onChange={(e) => setApiKey(e.target.value)}
+              className="w-full p-2 mb-4 rounded-md border border-gray-300 dark:border-gray-600 bg-transparent"
+              placeholder="Enter your API key"
             />
             <button
-              className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium transition-colors"
-              onClick={() => { saveApiKey(apiKey); setShowSettings(false); }}
+              onClick={() => {
+                saveApiKey(apiKey);
+                setShowSettings(false);
+              }}
+              className="btn btn-primary w-full"
             >
-              Save API Key
+              Save
             </button>
           </div>
         </div>
       )}
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <AIModal
+        showAIModal={showAIModal}
+        setShowAIModal={setShowAIModal}
+        aiText={aiText}
+        setAIText={setAIText}
+        aiFile={aiFile}
+        setAIFile={setAIFile}
+        aiLoading={aiLoading}
+        aiError={aiError}
+        aiSuccess={aiSuccess}
+        handleAIGenerate={handleAIGenerate}
+      />
+
+      <main className="container mx-auto px-4 py-8">
         {currentView === 'home' && <HomeView {...commonProps} />}
         {currentView === 'category' && selectedCategory && (
-          <HomeView {...commonProps} selectedCategory={selectedCategory} />
+          <CategoryView {...commonProps} selectedCategory={selectedCategory} />
         )}
         {currentView === 'create' && <CreateView {...createProps} />}
         {currentView === 'study' && <StudyView {...studyProps} />}
