@@ -40,9 +40,12 @@ const StudyView = ({
       {/* Study Header */}
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Study Session</h2>
-        <div className={`px-3 py-1 rounded-full text-sm ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
-          {currentCardIndex + 1} / {flashcards.length}
-        </div>
+        <button
+          onClick={() => setCurrentView('home')}
+          className="btn btn-end"
+        >
+          End Session
+        </button>
       </div>
 
       {/* Study Card */}
@@ -51,6 +54,8 @@ const StudyView = ({
         isFlipped={isFlipped}
         onFlip={flipCard}
         darkMode={darkMode}
+        pageNumber={currentCardIndex + 1}
+        totalPages={flashcards.length}
       />
 
       {/* Study Controls */}
@@ -60,7 +65,6 @@ const StudyView = ({
         onNext={nextCard}
         onFlip={flipCard}
         onDifficultyRating={handleDifficultyRating}
-        onEndSession={() => setCurrentView('home')}
         darkMode={darkMode}
       />
     </div>

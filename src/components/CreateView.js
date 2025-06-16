@@ -10,7 +10,7 @@ const CreateView = ({ darkMode, newCard, setNewCard, addFlashcard, setCurrentVie
 
   const handleCancel = () => {
     setNewCard({ front: '', back: '', category: '' });
-    setCurrentView('home');
+    setCurrentView(selectedCategory ? 'category' : 'home');
   };
 
   return (

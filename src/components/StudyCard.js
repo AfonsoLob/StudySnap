@@ -1,9 +1,15 @@
 // src/components/StudyCard.js
 import React from 'react';
 
-const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
-  const cardBgClasses = darkMode ? 'bg-gray-700' : 'bg-white';
-
+const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages }) => {
+  const cardBgClasses = darkMode
+    ? 'bg-white/10 border border-white/20 text-white'
+    : 'bg-white/30 border border-white/30 text-gray-800';
+    
+    const BgClasses = darkMode
+    ? 'bg-white/10 border border-white/20'
+    : 'bg-white/10 border border-white/20';
+    
   return (
     <div className="perspective-1000 mb-6">
       <div
@@ -11,7 +17,6 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
         className={`
           relative w-full min-h-[300px] p-8 flex items-center justify-center rounded-xl border
           ${cardBgClasses}
-          ${darkMode ? 'border-gray-600' : 'border-gray-200'}
           shadow-lg cursor-pointer transition-transform duration-500
           transform-style-preserve-3d
           hover:scale-[1.02] hover:shadow-xl
@@ -31,16 +36,20 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
           `}
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className={`text-sm font-medium mb-4 text-center ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
+          <div className={`card-category ${BgClasses}`}>
             {card.category}
           </div>
           <div className="flex-1 flex items-center justify-center w-full">
-            <div className="text-xl leading-relaxed mb-4 text-center break-words w-full">
+            <div className="text-white font-medium text-xl leading-relaxed mb-4 text-center break-words w-full">
               {card.front}
             </div>
           </div>
-          <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-200'}`}>
             (Click to reveal answer)
+          </div>
+          {/* Page numbering bottom right */}
+          <div className="absolute bottom-8 right-6 text-sm text-white font-medium">
+            {pageNumber} / {totalPages}
           </div>
         </div>
         {/* Back */}
@@ -52,16 +61,20 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode }) => {
           `}
           style={{ transform: 'rotateX(180deg)', backfaceVisibility: 'hidden' }}
         >
-          <div className={`text-sm font-medium mb-4 text-center ${darkMode ? 'text-sky-400' : 'text-sky-600'}`}>
+          <div className={`card-category ${BgClasses}`}>
             {card.category}
           </div>
           <div className="flex-1 flex items-center justify-center w-full">
-            <div className="text-xl leading-relaxed mb-4 text-center break-words w-full">
+            <div className="text-white font-medium text-xl leading-relaxed mb-4 text-center break-words w-full">
               {card.back}
             </div>
           </div>
-          <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-200'}`}>
             (Answer)
+          </div>
+          {/* Page numbering bottom right */}
+          <div className="absolute bottom-8 right-6 text-sm text-white font-medium">
+            {pageNumber} / {totalPages}
           </div>
         </div>
       </div>
