@@ -163,17 +163,16 @@ const App = () => {
   };
 
   // Add new flashcard (Firestore)
-  const addFlashcard = async () => {
-    if (newCard.front.trim() && newCard.back.trim()) {
+  const addFlashcard = async (front, back, category) => {
+    if (front.trim() && back.trim()) {
       const card = {
-        front: newCard.front.trim(),
-        back: newCard.back.trim(),
-        category: selectedCategory || newCard.category.trim() || 'General'
+        front: front.trim(),
+        back: back.trim(),
+        category: category || 'General'
       };
       const cardRef = collection(db, 'users', user.uid, 'flashcards');
       await addDoc(cardRef, card);
-      setNewCard({ front: '', back: '', category: '' });
-      setCurrentView('category');
+      setCurrentView(selectedCategory ? 'category' : 'home');
     }
   };
 

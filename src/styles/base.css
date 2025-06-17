@@ -100,6 +100,7 @@ body {
   transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
 }
+
 .glass-list {
   background: var(--color-card-bg);
   backdrop-filter: blur(12px);
@@ -169,8 +170,9 @@ body {
 }
 
 .btn-study {
-  background: linear-gradient(135deg, #a8e063, #56ab2f); /* Calming green gradient for study */
+  /* background: linear-gradient(135deg, rgba(128, 0, 128, 0.5), rgba(128, 0, 128, 0.6)); Smoother, lighter green for better white text contrast */
   color: white;
+  outline: 1px solid rgb(255, 255, 255, 0.77);
 }
 
 .btn-study:hover {
@@ -181,6 +183,7 @@ body {
 .btn-accent {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
   color: white;
+  outline: 1px solid rgb(255, 255, 255, 0.77);
 }
 
 .btn-accent:hover {

@@ -21,14 +21,14 @@ const FlashcardList = ({
           <div className="section-actions">
             <button
               onClick={onCreate}
-              className="btn btn-primary"
+              className="btn btn-primary outline outline-1 outline-white/30"
             >
               + Create Card
             </button>
             <button
               onClick={onStudy}
               disabled={flashcards.length === 0}
-              className="btn btn-study disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="btn bg-gradient-to-r from-purple-600 to-purple-700 outline outline-1 outline-white/30 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Start Studying
             </button>
@@ -68,7 +68,7 @@ const FlashcardList = ({
 
 const FlashcardItem = ({ card, darkMode, onEdit, onDelete }) => {
   return (
-    <div className={`glass-card p-4 rounded-xl shadow-md hover:shadow-xl transition-shadow`}>
+    <div className={`glass-list hover:translate-y-[-1px] p-4 rounded-xl shadow-md hover:shadow-xl transition-shadow`}>
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <p className="font-medium mb-1">{card.front}</p>

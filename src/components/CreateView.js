@@ -1,31 +1,143 @@
 // src/components/CreateView.js
-import React from 'react';
-import CardForm from './CardForm';
+import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
-const CreateView = ({ darkMode, newCard, setNewCard, addFlashcard, setCurrentView, categories, selectedCategory }) => {
-  const handleSubmit = (e) => {
+const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory }) => {
+  const [front, setFront] = useState('');
+  const [back, setBack] = useState('');
+  const [isBulkMode, setIsBulkMode] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addFlashcard();
+    if (isBulkMode) {
+      // Parse bulk text into multiple cards
+      const cards = parseBulkText(bulkText);
+      for (const card of cards) {
+        if (card.front && card.back) {
+          await addFlashcard(card.front, card.back, selectedCategory);
+        }
+      }
+      setBulkText('');
+    } else {
+      await addFlashcard(front, back, selectedCategory);
+      setFront('');
+      setBack('');
+    }
   };
 
-  const handleCancel = () => {
-    setNewCard({ front: '', back: '', category: '' });
-    setCurrentView(selectedCategory ? 'category' : 'home');
+  const parseBulkText = (text) => {
+    const cards = [];
+    const lines = text.split('\n');
+    let currentCard = {};
+
+    lines.forEach(line => {
+      if (line.trim().startsWith('Q:')) {
+        if (currentCard.front) {
+          cards.push(currentCard);
+          currentCard = {};
+        }
+        currentCard.front = line.replace('Q:', '').trim();
+      } else if (line.trim().startsWith('A:')) {
+        currentCard.back = line.replace('A:', '').trim();
+      }
+    });
+
+    if (currentCard.front && currentCard.back) {
+      cards.push(currentCard);
+    }
+
+    return cards;
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <CardForm
-        title="Create New Flashcard"
-        card={newCard}
-        setCard={setNewCard}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        submitText="Create Card"
-        darkMode={darkMode}
-        categories={categories}
-        selectedCategory={selectedCategory}
-      />
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="flex items-center mb-6">
+        <button
+          onClick={onBack}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="text-2xl font-bold ml-4">Create New Flashcard</h1>
+      </div>
+
+      <div className="mb-6">
+        <div className="flex space-x-4 mb-4">
+          <button
+            onClick={() => setIsBulkMode(false)}
+            className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
+              !isBulkMode
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700'
+            }`}
+          >
+            Single Card
+          </button>
+          <button
+            onClick={() => setIsBulkMode(true)}
+            className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
+              isBulkMode
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700'
+            }`}
+          >
+            Bulk Create
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {!isBulkMode ? (
+          <>
+            <div>
+              <label className="block text-sm font-medium mb-2">Front</label>
+              <textarea
+                value={front}
+                onChange={(e) => setFront(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+                rows={3}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Back</label>
+              <textarea
+                value={back}
+                onChange={(e) => setBack(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+                rows={3}
+                required
+              />
+            </div>
+          </>
+        ) : (
+          <div>
+            <label className="block text-sm font-medium mb-2">Enter multiple cards (one per line)</label>
+            <textarea
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+              rows={10}
+              placeholder={`Q: What is the capital of France?
+A: Paris
+
+Q: What is 2 + 2?
+A: 4
+
+(Each card should start with Q: for question and A: for answer)`}
+              required
+            />
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="w-full py-3 px-6 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          {isBulkMode ? 'Create Cards' : 'Create Card'}
+        </button>
+      </form>
     </div>
   );
 };
