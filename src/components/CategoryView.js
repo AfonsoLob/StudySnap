@@ -11,13 +11,13 @@ const CategoryView = ({
   editCard,
   startStudying,
   showAIModal,
-  setShowAIModal
+  setShowAIModal,
+  categoryStats
 }) => {
   // Filter flashcards for this category
   const categoryCards = flashcards.filter(card => card.category === selectedCategory);
-  const totalCards = categoryCards.length;
-  const mastery = Math.round((categoryCards.filter(card => card.mastery >= 4).length / totalCards) * 100) || 0;
-  const streak = categoryCards.reduce((max, card) => Math.max(max, card.streak || 0), 0);
+  const stats = categoryStats[selectedCategory] || { totalCards: 0, mastery: 0, streak: 0 };
+  const { totalCards, mastery, streak } = stats;
 
   return (
     <div>

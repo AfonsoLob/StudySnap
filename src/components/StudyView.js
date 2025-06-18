@@ -11,7 +11,9 @@ const StudyView = ({
   nextCard, 
   prevCard, 
   flipCard, 
-  setCurrentView 
+  setCurrentView,
+  handleDifficultyRating,
+  studyProgress
 }) => {
   if (flashcards.length === 0) {
     return (
@@ -29,9 +31,10 @@ const StudyView = ({
 
   const currentCard = flashcards[currentCardIndex];
 
-  const handleDifficultyRating = (difficulty) => {
-    // TODO: Implement spaced repetition logic
-    console.log(`Rated card ${currentCard.id} as ${difficulty}`);
+  const onDifficultyRating = async (difficulty) => {
+    if (currentCard && handleDifficultyRating) {
+      await handleDifficultyRating(currentCard.id, difficulty);
+    }
     nextCard();
   };
 
@@ -56,6 +59,7 @@ const StudyView = ({
         darkMode={darkMode}
         pageNumber={currentCardIndex + 1}
         totalPages={flashcards.length}
+        studyProgress={studyProgress}
       />
 
       {/* Study Controls */}
@@ -64,7 +68,7 @@ const StudyView = ({
         onPrevious={prevCard}
         onNext={nextCard}
         onFlip={flipCard}
-        onDifficultyRating={handleDifficultyRating}
+        onDifficultyRating={onDifficultyRating}
         darkMode={darkMode}
       />
     </div>

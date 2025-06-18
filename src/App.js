@@ -11,6 +11,7 @@ import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from './components/AuthForm';
 import { extractTextFromPDF, generateFlashcards } from './utils/aiUtils';
+import { calculateCategoryStreak } from './utils/studyUtils';
 import './styles/base.css';
 import {
   collection,
@@ -22,7 +23,8 @@ import {
   onSnapshot,
   query,
   where,
-  getDoc
+  getDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 
 const App = () => {
@@ -46,6 +48,8 @@ const App = () => {
   const [aiSuccess, setAISuccess] = useState('');
   const [modalTop, setModalTop] = useState(0);
   const settingsModalRef = useRef(null);
+  const [studyProgress, setStudyProgress] = useState({});
+  const [categoryStats, setCategoryStats] = useState({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -65,6 +69,15 @@ const App = () => {
     const unsubCards = onSnapshot(cardRef, (snap) => {
       setFlashcards(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
+    // Study Progress
+    const progressRef = collection(db, 'users', user.uid, 'studyProgress');
+    const unsubProgress = onSnapshot(progressRef, (snap) => {
+      const progress = {};
+      snap.docs.forEach(doc => {
+        progress[doc.id] = doc.data();
+      });
+      setStudyProgress(progress);
+    });
     // API Key
     const fetchApiKey = async () => {
       const settingsRef = doc(db, 'users', user.uid, 'settings', 'ai');
@@ -76,8 +89,64 @@ const App = () => {
       }
     };
     fetchApiKey();
-    return () => { unsubCat(); unsubCards(); };
+    return () => { unsubCat(); unsubCards(); unsubProgress(); };
   }, [user]);
+
+  // Calculate category statistics when flashcards or study progress changes
+  useEffect(() => {
+    if (!flashcards.length) {
+      setCategoryStats({});
+      return;
+    }
+
+    const stats = {};
+    categories.forEach(category => {
+      const categoryCards = flashcards.filter(card => card.category === category);
+      const totalCards = categoryCards.length;
+      
+      if (totalCards === 0) {
+        stats[category] = {
+          totalCards: 0,
+          mastery: 0,
+          streak: 0,
+          lastStudied: null
+        };
+        return;
+      }
+
+      // Calculate mastery based on study progress
+      let totalMastery = 0;
+      let lastStudied = null;
+
+      categoryCards.forEach(card => {
+        const progress = studyProgress[card.id];
+        if (progress) {
+          // Mastery is now already a percentage (0-100)
+          totalMastery += progress.mastery || 0;
+          
+          if (progress.lastStudied && (!lastStudied || progress.lastStudied.toDate() > lastStudied.toDate())) {
+            lastStudied = progress.lastStudied;
+          }
+        }
+      });
+
+      // Calculate average mastery (already in percentage)
+      const averageMastery = totalCards > 0 ? totalMastery / totalCards : 0;
+      const masteryPercentage = Math.round(averageMastery);
+      
+      // Calculate streak using utility function
+      const maxStreak = calculateCategoryStreak(flashcards, studyProgress, category);
+
+      stats[category] = {
+        totalCards,
+        mastery: masteryPercentage,
+        streak: maxStreak,
+        lastStudied
+      };
+    });
+
+    setCategoryStats(stats);
+  }, [flashcards, studyProgress, categories]);
 
   // Calculate modal top position based on scroll and window height
   const updateModalPosition = () => {
@@ -191,9 +260,18 @@ const App = () => {
   };
 
   // Start studying (by category)
-  const startStudying = () => {
+  const startStudying = async () => {
     const cards = flashcards.filter(card => card.category === selectedCategory);
     if (cards.length > 0) {
+      // Track study session start for streak purposes
+      if (user) {
+        const sessionRef = doc(db, 'users', user.uid, 'studySessions', selectedCategory);
+        await setDoc(sessionRef, {
+          lastSessionStart: serverTimestamp(),
+          category: selectedCategory
+        }, { merge: true });
+      }
+      
       setCurrentCardIndex(0);
       setIsFlipped(false);
       setCurrentView('study');
@@ -229,6 +307,91 @@ const App = () => {
     const settingsRef = doc(db, 'users', user.uid, 'settings', 'ai');
     await setDoc(settingsRef, { apiKey: key });
     setApiKey(key);
+  };
+
+  // Handle difficulty rating and update study progress
+  const handleDifficultyRating = async (cardId, rating) => {
+    if (!user) return;
+    
+    const progressRef = doc(db, 'users', user.uid, 'studyProgress', cardId);
+    const progressSnap = await getDoc(progressRef);
+    
+    let currentProgress = {
+      mastery: 0,
+      streak: 0,
+      totalReviews: 0,
+      lastStudied: serverTimestamp(),
+      lastStudyDate: null
+    };
+    
+    if (progressSnap.exists()) {
+      currentProgress = progressSnap.data();
+    }
+    
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // New mastery calculation based on rating percentages
+    // Base percentages: 1=20%, 2=40%, 3=60%, 4=80%, 5=100%
+    const basePercentages = { 1: 20, 2: 40, 3: 60, 4: 80, 5: 100 };
+    const caps = { 1: 30, 2: 50, 3: 70, 4: 90, 5: 100 };
+    
+    const basePercentage = basePercentages[rating];
+    const cap = caps[rating];
+    
+    let newMastery;
+    if (currentProgress.totalReviews === 0) {
+      // First rating
+      newMastery = basePercentage;
+    } else {
+      // Increment by 2 points for each press of the same rating
+      const currentMastery = currentProgress.mastery;
+      
+      // Count how many times this rating was given before
+      const previousRatings = currentProgress.ratingHistory || [];
+      const sameRatingCount = previousRatings.filter(r => r === rating).length;
+      
+      // Calculate new mastery: base + (count * 2), but capped
+      newMastery = Math.min(cap, basePercentage + (sameRatingCount * 2));
+    }
+    
+    // Update streak logic
+    let newStreak = currentProgress.streak;
+    const lastStudyDate = currentProgress.lastStudyDate ? 
+      new Date(currentProgress.lastStudyDate.seconds * 1000) : null;
+    
+    if (lastStudyDate) {
+      const lastStudyDay = new Date(lastStudyDate.getFullYear(), lastStudyDate.getMonth(), lastStudyDate.getDate());
+      const daysDiff = Math.floor((today - lastStudyDay) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff === 0) {
+        // Already studied today, don't increment streak
+        newStreak = currentProgress.streak;
+      } else if (daysDiff === 1) {
+        // Studied yesterday, increment streak
+        newStreak = currentProgress.streak + 1;
+      } else if (daysDiff > 3) {
+        // More than 3 days gap, reset streak
+        newStreak = 1;
+      } else {
+        // 2-3 days gap, keep current streak
+        newStreak = currentProgress.streak;
+      }
+    } else {
+      // First time studying, start streak
+      newStreak = 1;
+    }
+    
+    // Update progress in Firestore
+    await setDoc(progressRef, {
+      ...currentProgress,
+      mastery: newMastery,
+      streak: newStreak,
+      totalReviews: currentProgress.totalReviews + 1,
+      lastStudied: serverTimestamp(),
+      lastStudyDate: serverTimestamp(),
+      ratingHistory: [...(currentProgress.ratingHistory || []), rating]
+    });
   };
 
   // AI flashcard generation handler
@@ -273,7 +436,9 @@ const App = () => {
     apiKey,
     user,
     showAIModal,
-    setShowAIModal
+    setShowAIModal,
+    categoryStats,
+    studyProgress
   };
 
   const studyProps = {
@@ -284,7 +449,8 @@ const App = () => {
     nextCard,
     prevCard,
     flipCard,
-    setCurrentView
+    setCurrentView,
+    handleDifficultyRating
   };
 
   const createProps = {

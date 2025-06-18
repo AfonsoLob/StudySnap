@@ -101,6 +101,7 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+
 .glass-list {
   background: var(--color-card-bg);
   backdrop-filter: blur(12px);
@@ -170,14 +171,19 @@ body {
 }
 
 .btn-study {
-  /* background: linear-gradient(135deg, rgba(128, 0, 128, 0.5), rgba(128, 0, 128, 0.6)); Smoother, lighter green for better white text contrast */
+  background: linear-gradient(to right, #9333ea, #7e22ce); /* from-purple-600 to-purple-700 */
+  outline: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  outline: 1px solid rgb(255, 255, 255, 0.77);
+
+}
+.btn-study:disabled {
+  background: #9ca3af; /* Tailwind's gray-400 */
+  cursor: not-allowed;
 }
 
 .btn-study:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
 }
 
 .btn-accent {

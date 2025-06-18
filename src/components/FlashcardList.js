@@ -28,7 +28,7 @@ const FlashcardList = ({
             <button
               onClick={onStudy}
               disabled={flashcards.length === 0}
-              className="btn bg-gradient-to-r from-purple-600 to-purple-700 outline outline-1 outline-white/30 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="btn btn-study"
             >
               Start Studying
             </button>
@@ -77,14 +77,14 @@ const FlashcardItem = ({ card, darkMode, onEdit, onDelete }) => {
         <div className="flex space-x-2 ml-4">
           <button
             onClick={onEdit}
-            className="p-2 text-gray-500 hover:text-indigo-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
+            className={`p-2 text-gray-500 hover:text-indigo-500 transition-colors rounded-lg ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}
             title="Edit card"
           >
             <Edit3 className="w-4 h-4" />
           </button>
           <button
             onClick={onDelete}
-            className="p-2 text-gray-500 hover:text-red-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
+            className={`p-2 text-gray-500 hover:text-indigo-500 transition-colors rounded-lg ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}
             title="Delete card"
           >
             <Trash2 className="w-4 h-4" />

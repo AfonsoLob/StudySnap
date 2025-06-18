@@ -1,7 +1,8 @@
 // src/components/StudyCard.js
 import React from 'react';
+import { getMasteryDescription } from '../utils/studyUtils';
 
-const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages }) => {
+const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, studyProgress }) => {
   const cardBgClasses = darkMode
     ? 'bg-white/10 border border-white/20 text-white'
     : 'bg-white/30 border border-white/30 text-gray-800';
@@ -9,7 +10,12 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages }
     const BgClasses = darkMode
     ? 'bg-white/10 border border-white/20'
     : 'bg-white/10 border border-white/20';
-    
+
+  const progress = studyProgress[card.id];
+  const mastery = progress?.mastery || 0;
+  const masteryDescription = getMasteryDescription(mastery);
+  const masteryPercentage = Math.round(mastery);
+
   return (
     <div className="perspective-1000 mb-6">
       <div
@@ -47,6 +53,10 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages }
           <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-200'}`}>
             (Click to reveal answer)
           </div>
+          {/* Mastery indicator */}
+          <div className="absolute top-8 right-6 text-xs text-white font-medium bg-white/20 px-2 py-1 rounded">
+            {masteryDescription} ({masteryPercentage}%)
+          </div>
           {/* Page numbering bottom right */}
           <div className="absolute bottom-8 right-6 text-sm text-white font-medium">
             {pageNumber} / {totalPages}
@@ -71,6 +81,10 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages }
           </div>
           <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-200'}`}>
             (Answer)
+          </div>
+          {/* Mastery indicator */}
+          <div className="absolute top-8 right-6 text-xs text-white font-medium bg-white/20 px-2 py-1 rounded">
+            {masteryDescription} ({masteryPercentage}%)
           </div>
           {/* Page numbering bottom right */}
           <div className="absolute bottom-8 right-6 text-sm text-white font-medium">

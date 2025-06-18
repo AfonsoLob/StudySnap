@@ -2,6 +2,7 @@
 import React from 'react';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { formatTimeAgo } from '../utils/studyUtils';
 
 const HomeView = ({ 
   darkMode, 
@@ -10,7 +11,8 @@ const HomeView = ({
   flashcards, 
   setCurrentView, 
   addCategory,
-  deleteCategory
+  deleteCategory,
+  categoryStats
 }) => {
   const [showCategoryForm, setShowCategoryForm] = React.useState(false);
   const [newCategory, setNewCategory] = React.useState('');
@@ -65,15 +67,15 @@ const HomeView = ({
             </button>
             <h3 className="category-title">{cat}</h3>
             <div className="category-meta">
-              {flashcards.filter(card => card.category === cat).length} cards • Last studied 2 days ago
+              {categoryStats[cat]?.totalCards || 0} cards • {formatTimeAgo(categoryStats[cat]?.lastStudied)}
             </div>
             <div className="category-stats">
               <div className="stat-item">
-                <div className="stat-number">85%</div>
+                <div className="stat-number">{categoryStats[cat]?.mastery || 0}%</div>
                 <div className="stat-label">Mastery</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number">45</div>
+                <div className="stat-number">{categoryStats[cat]?.streak || 0}</div>
                 <div className="stat-label">Streak</div>
               </div>
             </div>
@@ -96,7 +98,7 @@ const HomeView = ({
                 fill="none"
                 stroke="#4ecdc4"
                 strokeDasharray={2 * Math.PI * 20}
-                strokeDashoffset={2 * Math.PI * 20 * (1 - 0.85)} // 0.85 = 85% mastery
+                strokeDashoffset={2 * Math.PI * 20 * (1 - (categoryStats[cat]?.mastery || 0) / 100)}
                 style={{ transition: 'stroke-dashoffset 0.3s' }}
               />
             </svg>
