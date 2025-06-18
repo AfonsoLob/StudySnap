@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 const AIModal = ({
   showAIModal,
@@ -12,6 +12,52 @@ const AIModal = ({
   aiSuccess,
   handleAIGenerate
 }) => {
+  const modalRef = useRef(null);
+  const [modalTop, setModalTop] = useState(0);
+
+  // Center modal logic
+  useEffect(() => {
+    if (!showAIModal) return;
+    const updateModalPosition = () => {
+      if (modalRef.current) {
+        const modalHeight = modalRef.current.offsetHeight;
+        const top = window.scrollY + (window.innerHeight / 2) - (modalHeight / 2);
+        setModalTop(Math.max(top, 24));
+      }
+    };
+    updateModalPosition();
+    window.addEventListener('scroll', updateModalPosition);
+    window.addEventListener('resize', updateModalPosition);
+    return () => {
+      window.removeEventListener('scroll', updateModalPosition);
+      window.removeEventListener('resize', updateModalPosition);
+    };
+  }, [showAIModal]);
+
+  // Prevent background scroll
+  useEffect(() => {
+    if (showAIModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showAIModal]);
+
+  // Close on click outside
+  useEffect(() => {
+    if (!showAIModal) return;
+    function handleClick(e) {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        setShowAIModal(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showAIModal, setShowAIModal]);
+
   if (!showAIModal) return null;
 
   const handleFileChange = (e) => {
@@ -28,8 +74,16 @@ const AIModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="glass-card p-8 max-w-md w-full relative">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 backdrop-blur-sm" style={{ pointerEvents: 'auto' }}>
+      <div
+        ref={modalRef}
+        className="glass-card p-8 max-w-md w-full absolute left-1/2 flex flex-col items-center justify-center"
+        style={{
+          top: modalTop,
+          left: '50%',
+          transform: 'translateX(-50%)'
+        }}
+      >
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl transition-colors"
           onClick={() => setShowAIModal(false)}

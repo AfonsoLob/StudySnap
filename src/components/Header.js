@@ -3,7 +3,7 @@ import React from 'react';
 import { BookOpen, Sun, Moon, Settings } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-
+import logo from '../assets/logoSnap.png';
 const Header = ({ darkMode, toggleDarkMode, setCurrentView, user, onShowSettings }) => {
   return (
     <header className="glass-header sticky top-0 z-40 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
@@ -13,8 +13,8 @@ const Header = ({ darkMode, toggleDarkMode, setCurrentView, user, onShowSettings
             onClick={() => setCurrentView('home')}
             className="flex items-center space-x-3 cursor-pointer group"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-105">
-              <BookOpen className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-black'}`} />
+            <div className="w-13 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-105">
+              <img src={logo} alt="StudySnap Logo" className="w-[3.5rem] object-contain" />
             </div>            
             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text drop-shadow-md">
               StudySnap
