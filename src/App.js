@@ -51,6 +51,12 @@ const App = () => {
   const [studyProgress, setStudyProgress] = useState({});
   const [categoryStats, setCategoryStats] = useState({});
 
+  // Helper function to safely get category name
+  const getCategoryName = (category) => {
+    if (!category) return null;
+    return typeof category === 'string' ? category : category.name;
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
     return () => unsubscribe();
@@ -62,7 +68,24 @@ const App = () => {
     // Categories
     const catRef = collection(db, 'users', user.uid, 'categories');
     const unsubCat = onSnapshot(catRef, (snap) => {
-      setCategories(snap.docs.map(doc => doc.data().name));
+      setCategories(snap.docs.map(doc => {
+        const data = doc.data();
+        // Handle both old format (just name) and new format (name + createdAt)
+        if (typeof data.name === 'string' && !data.createdAt) {
+          // Old format - convert to new format with default createdAt
+          return { 
+            name: data.name, 
+            createdAt: { seconds: Date.now() / 1000, nanoseconds: 0 }, // Default timestamp
+            id: doc.id 
+          };
+        }
+        // New format
+        return { 
+          name: data.name, 
+          createdAt: data.createdAt, 
+          id: doc.id 
+        };
+      }));
     });
     // Flashcards
     const cardRef = collection(db, 'users', user.uid, 'flashcards');
@@ -101,11 +124,11 @@ const App = () => {
 
     const stats = {};
     categories.forEach(category => {
-      const categoryCards = flashcards.filter(card => card.category === category);
+      const categoryCards = flashcards.filter(card => card.category === category.name);
       const totalCards = categoryCards.length;
       
       if (totalCards === 0) {
-        stats[category] = {
+        stats[category.name] = {
           totalCards: 0,
           mastery: 0,
           streak: 0,
@@ -135,9 +158,9 @@ const App = () => {
       const masteryPercentage = Math.round(averageMastery);
       
       // Calculate streak using utility function
-      const maxStreak = calculateCategoryStreak(flashcards, studyProgress, category);
+      const maxStreak = calculateCategoryStreak(flashcards, studyProgress, category.name);
 
-      stats[category] = {
+      stats[category.name] = {
         totalCards,
         mastery: masteryPercentage,
         streak: maxStreak,
@@ -205,9 +228,9 @@ const App = () => {
 
   // Add new category (Firestore)
   const addCategory = async (name) => {
-    if (name && !categories.includes(name)) {
+    if (name && !categories.some(cat => cat.name === name)) {
       const catRef = collection(db, 'users', user.uid, 'categories');
-      await addDoc(catRef, { name });
+      await addDoc(catRef, { name, createdAt: serverTimestamp() });
     }
   };
 
@@ -261,14 +284,15 @@ const App = () => {
 
   // Start studying (by category)
   const startStudying = async () => {
-    const cards = flashcards.filter(card => card.category === selectedCategory);
+    const categoryName = getCategoryName(selectedCategory);
+    const cards = flashcards.filter(card => card.category === categoryName);
     if (cards.length > 0) {
       // Track study session start for streak purposes
       if (user) {
-        const sessionRef = doc(db, 'users', user.uid, 'studySessions', selectedCategory);
+        const sessionRef = doc(db, 'users', user.uid, 'studySessions', categoryName);
         await setDoc(sessionRef, {
           lastSessionStart: serverTimestamp(),
-          category: selectedCategory
+          category: categoryName
         }, { merge: true });
       }
       
@@ -280,13 +304,15 @@ const App = () => {
 
   // Navigation functions
   const nextCard = () => {
-    const cards = flashcards.filter(card => card.category === selectedCategory);
+    const categoryName = getCategoryName(selectedCategory);
+    const cards = flashcards.filter(card => card.category === categoryName);
     setCurrentCardIndex((prev) => (prev + 1) % cards.length);
     setIsFlipped(false);
   };
 
   const prevCard = () => {
-    const cards = flashcards.filter(card => card.category === selectedCategory);
+    const categoryName = getCategoryName(selectedCategory);
+    const cards = flashcards.filter(card => card.category === categoryName);
     setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length);
     setIsFlipped(false);
   };
@@ -401,14 +427,13 @@ const App = () => {
     setAISuccess('');
     try {
       const input = aiFile || aiText;
-      const cards = await generateFlashcards(input, apiKey, selectedCategory);
-      
+      const categoryName = getCategoryName(selectedCategory);
+      const cards = await generateFlashcards(input, apiKey, categoryName);
       // Add flashcards to Firestore
       const cardRef = collection(db, 'users', user.uid, 'flashcards');
       for (const card of cards) {
         await addDoc(cardRef, card);
       }
-      
       setAISuccess(`Created ${cards.length} flashcards!`);
       setShowAIModal(false);
       setAIText('');
@@ -443,7 +468,7 @@ const App = () => {
 
   const studyProps = {
     ...commonProps,
-    flashcards: flashcards.filter(card => card.category === selectedCategory),
+    flashcards: flashcards.filter(card => card.category === getCategoryName(selectedCategory)),
     currentCardIndex,
     isFlipped,
     nextCard,

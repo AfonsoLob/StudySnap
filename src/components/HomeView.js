@@ -1,5 +1,5 @@
 // src/components/HomeView.js
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { formatTimeAgo } from '../utils/studyUtils';
@@ -16,6 +16,28 @@ const HomeView = ({
 }) => {
   const [showCategoryForm, setShowCategoryForm] = React.useState(false);
   const [newCategory, setNewCategory] = React.useState('');
+  const inputRef = useRef(null);
+
+  // Auto-focus input when form is shown
+  useEffect(() => {
+    if (showCategoryForm && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showCategoryForm]);
+
+  // Sort categories by createdAt (oldest first)
+  const sortedCategories = [...categories].sort((a, b) => {
+    // Handle cases where createdAt might be null/undefined
+    if (!a.createdAt && !b.createdAt) return 0;
+    if (!a.createdAt) return 1; // Put items without createdAt at the end
+    if (!b.createdAt) return -1;
+    
+    // Convert to comparable values
+    const aTime = a.createdAt.seconds || a.createdAt;
+    const bTime = b.createdAt.seconds || b.createdAt;
+    
+    return aTime - bTime;
+  });
 
   return (
     <div className="space-y-6">
@@ -37,6 +59,7 @@ const HomeView = ({
           className="mb-4 flex space-x-2"
         >
           <input
+            ref={inputRef}
             type="text"
             value={newCategory}
             onChange={e => setNewCategory(e.target.value)}
@@ -49,9 +72,9 @@ const HomeView = ({
         </form>
       )}
       <div className="categories-grid">
-        {categories.map(cat => (
+        {sortedCategories.map(cat => (
           <div
-            key={cat}
+            key={cat.id || cat.name}
             className="category-card"
             onClick={() => {
               setSelectedCategory(cat);
@@ -61,21 +84,21 @@ const HomeView = ({
             <button
               className="delete-btn"
               title="Delete category"
-              onClick={e => { e.stopPropagation(); if(window.confirm(`Delete category '${cat}' and all its cards?`)) deleteCategory(cat); }}
+              onClick={e => { e.stopPropagation(); if(window.confirm(`Delete category '${cat.name}' and all its cards?`)) deleteCategory(cat.name); }}
             >
               ×
             </button>
-            <h3 className="category-title">{cat}</h3>
+            <h3 className="category-title">{cat.name}</h3>
             <div className="category-meta">
-              {categoryStats[cat]?.totalCards || 0} cards • {formatTimeAgo(categoryStats[cat]?.lastStudied)}
+              {categoryStats[cat.name]?.totalCards || 0} cards • {formatTimeAgo(categoryStats[cat.name]?.lastStudied)}
             </div>
             <div className="category-stats">
               <div className="stat-item">
-                <div className="stat-number">{categoryStats[cat]?.mastery || 0}%</div>
+                <div className="stat-number">{categoryStats[cat.name]?.mastery || 0}%</div>
                 <div className="stat-label">Mastery</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number">{categoryStats[cat]?.streak || 0}</div>
+                <div className="stat-number">{categoryStats[cat.name]?.streak || 0}</div>
                 <div className="stat-label">Streak</div>
               </div>
             </div>
@@ -98,7 +121,7 @@ const HomeView = ({
                 fill="none"
                 stroke="#4ecdc4"
                 strokeDasharray={2 * Math.PI * 20}
-                strokeDashoffset={2 * Math.PI * 20 * (1 - (categoryStats[cat]?.mastery || 0) / 100)}
+                strokeDashoffset={2 * Math.PI * 20 * (1 - (categoryStats[cat.name]?.mastery || 0) / 100)}
                 style={{ transition: 'stroke-dashoffset 0.3s' }}
               />
             </svg>
