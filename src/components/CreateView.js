@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
-const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory }) => {
+const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categories }) => {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [isBulkMode, setIsBulkMode] = useState(false);
   const [bulkText, setBulkText] = useState('');
+  const [category, setCategory] = useState(selectedCategory || '');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,12 +16,12 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory }) => {
       const cards = parseBulkText(bulkText);
       for (const card of cards) {
         if (card.front && card.back) {
-          await addFlashcard(card.front, card.back, selectedCategory);
+          await addFlashcard(card.front, card.back, category);
         }
       }
       setBulkText('');
     } else {
-      await addFlashcard(front, back, selectedCategory);
+      await addFlashcard(front, back, category);
       setFront('');
       setBack('');
     }
@@ -88,6 +89,23 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+            required
+          >
+            <option value="">Select a category</option>
+            {categories.map(cat => (
+              <option key={cat.name || cat} value={cat.name || cat}>
+                {cat.name || cat}
+              </option>
+            ))}
+          </select>
+        </div>
+        
         {!isBulkMode ? (
           <>
             <div>

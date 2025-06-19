@@ -124,11 +124,12 @@ const App = () => {
 
     const stats = {};
     categories.forEach(category => {
-      const categoryCards = flashcards.filter(card => card.category === category.name);
+      const categoryName = getCategoryName(category);
+      const categoryCards = flashcards.filter(card => card.category === categoryName);
       const totalCards = categoryCards.length;
       
       if (totalCards === 0) {
-        stats[category.name] = {
+        stats[categoryName] = {
           totalCards: 0,
           mastery: 0,
           streak: 0,
@@ -158,9 +159,9 @@ const App = () => {
       const masteryPercentage = Math.round(averageMastery);
       
       // Calculate streak using utility function
-      const maxStreak = calculateCategoryStreak(flashcards, studyProgress, category.name);
+      const maxStreak = calculateCategoryStreak(flashcards, studyProgress, categoryName);
 
-      stats[category.name] = {
+      stats[categoryName] = {
         totalCards,
         mastery: masteryPercentage,
         streak: maxStreak,
@@ -485,7 +486,8 @@ const App = () => {
     addFlashcard,
     setCurrentView,
     categories,
-    selectedCategory
+    selectedCategory: getCategoryName(selectedCategory),
+    onBack: () => setCurrentView(selectedCategory ? 'category' : 'home')
   };
 
   const editProps = {
