@@ -11,7 +11,9 @@ const StudyView = ({
   nextCard, 
   prevCard, 
   flipCard, 
-  setCurrentView 
+  setCurrentView,
+  handleDifficultyRating,
+  studyProgress
 }) => {
   if (flashcards.length === 0) {
     return (
@@ -29,9 +31,10 @@ const StudyView = ({
 
   const currentCard = flashcards[currentCardIndex];
 
-  const handleDifficultyRating = (difficulty) => {
-    // TODO: Implement spaced repetition logic
-    console.log(`Rated card ${currentCard.id} as ${difficulty}`);
+  const onDifficultyRating = async (difficulty) => {
+    if (currentCard && handleDifficultyRating) {
+      await handleDifficultyRating(currentCard.id, difficulty);
+    }
     nextCard();
   };
 
@@ -40,9 +43,12 @@ const StudyView = ({
       {/* Study Header */}
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Study Session</h2>
-        <div className={`px-3 py-1 rounded-full text-sm ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
-          {currentCardIndex + 1} / {flashcards.length}
-        </div>
+        <button
+          onClick={() => setCurrentView('home')}
+          className="btn btn-end"
+        >
+          End Session
+        </button>
       </div>
 
       {/* Study Card */}
@@ -51,6 +57,9 @@ const StudyView = ({
         isFlipped={isFlipped}
         onFlip={flipCard}
         darkMode={darkMode}
+        pageNumber={currentCardIndex + 1}
+        totalPages={flashcards.length}
+        studyProgress={studyProgress}
       />
 
       {/* Study Controls */}
@@ -59,8 +68,7 @@ const StudyView = ({
         onPrevious={prevCard}
         onNext={nextCard}
         onFlip={flipCard}
-        onDifficultyRating={handleDifficultyRating}
-        onEndSession={() => setCurrentView('home')}
+        onDifficultyRating={onDifficultyRating}
         darkMode={darkMode}
       />
     </div>

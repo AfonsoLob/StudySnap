@@ -1,0 +1,226 @@
+@import './base.css';
+
+/* Study Session Layout */
+.study-session {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Session Header */
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 48px;
+}
+
+.session-title {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(45deg, #ffffff, #f8f9fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.session-counter {
+  padding: 12px 24px;
+  background: linear-gradient(45deg, #00f2fe, #4facfe);
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Flashcard Container */
+.flashcard-container {
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 48px;
+}
+
+.flashcard {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 24px;
+  padding: 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--color-text-primary);
+}
+
+.flashcard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4facfe, #00f2fe, #ff6b6b, #ee5a24);
+  background-size: 300% 100%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.flashcard:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.16);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+
+.card-question {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  margin-bottom: 48px;
+}
+
+.card-answer {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.answer-label {
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.btn-end {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-end:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+  color: white;
+}
+
+/* Knowledge Rating */
+.knowledge-rating {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.rating-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-btn:hover {
+  transform: translateY(-2px);
+}
+
+.rating-btn.rating-1 { background: linear-gradient(135deg, #ff4757, #c44569); }
+.rating-btn.rating-2 { background: linear-gradient(135deg, #ffa502, #ff6348); }
+.rating-btn.rating-3 { background: linear-gradient(135deg, #ffd600, #e6b800); }
+.rating-btn.rating-4 { background: linear-gradient(135deg, #2ed574e3, #1e90ff); }
+.rating-btn.rating-5 { background: linear-gradient(135deg, #4facfe, #00f1fec0); }
+
+.rating-label {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+/* No Cards State */
+.no-cards-container {
+  text-align: center;
+  padding: 48px 20px;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .study-session {
+    padding: 0 16px;
+  }
+  
+  .session-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .session-title {
+    font-size: 28px;
+  }
+
+  .flashcard {
+    padding: 32px 24px;
+  }
+  
+  .card-question {
+    font-size: 22px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+} 

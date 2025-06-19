@@ -3,46 +3,47 @@ import React from 'react';
 import { BookOpen, Sun, Moon, Settings } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-
+import logo from '../assets/logoSnap.png';
 const Header = ({ darkMode, toggleDarkMode, setCurrentView, user, onShowSettings }) => {
-  const cardBgClasses = darkMode ? 'bg-gray-700' : 'bg-white';
-
   return (
-    <header className={`${cardBgClasses} border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'} shadow-sm`}>
-      <div className="max-w-6xl mx-auto px-4 py-4">
+    <header className="glass-header sticky top-0 z-40 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div 
             onClick={() => setCurrentView('home')}
-            className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center space-x-3 cursor-pointer group"
           >
-            <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold">StudySnap</h1>
+            <div className="w-13 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-105">
+              <img src={logo} alt="StudySnap Logo" className="w-[3.5rem] object-contain" />
+            </div>            
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text drop-shadow-md">
+              StudySnap
+            </span>
           </div>
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleDarkMode}
-              className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'}`}
+              className="p-2 rounded-lg transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {darkMode ? (
+                <Sun className="w-5 h-5 text-yellow-400" tabIndex={-1} />
+              ) : (
+                <Moon className="w-5 h-5 text-indigo-200" tabIndex={-1} />
+              )}
             </button>
             {user && (
               <>
                 <button
                   onClick={onShowSettings}
-                  className={`p-2 rounded-lg transition-colors ${
-                    darkMode
-                      ? 'hover:bg-gray-600'
-                      : 'hover:bg-gray-100'
-                  }`}
+                  className="p-2 rounded-lg transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   title="Settings"
                 >
-                  <Settings className={`w-5 h-5 ${darkMode ? 'text-gray-300' : 'text-gray-500'}`} />
+                  <Settings className="w-5 h-5 text-gray-200" />
                 </button>
                 <button
                   onClick={() => signOut(auth)}
-                  className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="btn btn-primary"
                 >
                   Logout
                 </button>
