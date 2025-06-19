@@ -14,9 +14,17 @@ const CategoryView = ({
   setShowAIModal,
   categoryStats
 }) => {
+  // Helper function to safely get category name
+  const getCategoryName = (category) => {
+    if (!category) return '';
+    return typeof category === 'string' ? category : category.name;
+  };
+
+  const categoryName = getCategoryName(selectedCategory);
+  
   // Filter flashcards for this category
-  const categoryCards = flashcards.filter(card => card.category === selectedCategory);
-  const stats = categoryStats[selectedCategory] || { totalCards: 0, mastery: 0, streak: 0 };
+  const categoryCards = flashcards.filter(card => card.category === categoryName);
+  const stats = categoryStats[categoryName] || { totalCards: 0, mastery: 0, streak: 0 };
   const { totalCards, mastery, streak } = stats;
 
   return (
@@ -28,7 +36,7 @@ const CategoryView = ({
         ← Back to Categories
       </button>
       <div className="page-header">
-        <h1 className="page-title">{selectedCategory}</h1>
+        <h1 className="page-title">{categoryName}</h1>
       </div>
       <div className="stats-bar">
         <div className="stat-item">
@@ -55,7 +63,7 @@ const CategoryView = ({
           onAI={() => setShowAIModal(true)}
           showAIModal={showAIModal}
           setShowAIModal={setShowAIModal}
-          categoryName={selectedCategory}
+          categoryName={categoryName}
         />
       </div>
     </div>
