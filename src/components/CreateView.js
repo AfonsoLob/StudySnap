@@ -91,7 +91,11 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2">Category</label>
-          <div className="w-full p-3 bg-black/30 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent bg-opacity-50">
+          <div
+            className={`w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 ${
+              darkMode ? 'bg-white/20' : 'bg-black/20'
+            }`}
+          >
             {category || 'No category selected'}
           </div>
         </div>
@@ -103,7 +107,7 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
               <textarea
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-600 bg-black/30"
+                className={`w-full p-3 rounded-lg border border-gray-600 ${darkMode ? 'bg-white/20' : 'bg-black/20'}`}
                 rows={3}
                 required
               />
@@ -113,7 +117,7 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
               <textarea
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-600 bg-black/30"
+                className={`w-full p-3 rounded-lg border border-gray-600 ${darkMode ? 'bg-white/20' : 'bg-black/20'}`}
                 rows={3}
                 required
               />
@@ -125,7 +129,7 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
             <textarea
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-600 bg-black/30"
+              className={`w-full p-3 rounded-lg border border-gray-600 ${darkMode ? 'bg-white/20' : 'bg-black/20'}`}
               rows={10}
               placeholder={`Q: What is the capital of France?\nA: Paris\n\nQ: What is 2 + 2?\nA: 4\n\n(Each card should start with Q: for question and A: for answer)`}
               required
