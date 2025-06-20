@@ -4,7 +4,6 @@ import FlashcardList from './FlashcardList';
 const CategoryView = ({ 
   darkMode,
   selectedCategory,
-  setSelectedCategory,
   flashcards,
   setCurrentView,
   deleteFlashcard,
@@ -14,13 +13,8 @@ const CategoryView = ({
   setShowAIModal,
   categoryStats
 }) => {
-  // Helper function to safely get category name
-  const getCategoryName = (category) => {
-    if (!category) return '';
-    return typeof category === 'string' ? category : category.name;
-  };
 
-  const categoryName = getCategoryName(selectedCategory);
+  const categoryName = selectedCategory.name;
   
   // Filter flashcards for this category
   const categoryCards = flashcards.filter(card => card.category === categoryName);

@@ -32,7 +32,7 @@ const CardForm = ({
           </label>
           <select
             id="category"
-            value={selectedCategory || card.category}
+            value={selectedCategory?.name || card.category}
             onChange={e => setCard({ ...card, category: e.target.value })}
             className={inputClasses}
             disabled={!!selectedCategory}
@@ -40,7 +40,9 @@ const CardForm = ({
           >
             <option value="">Select a category</option>
             {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+              <option key={cat.id} value={cat.name}>
+                {cat.name}
+              </option>
             ))}
           </select>
         </div>
