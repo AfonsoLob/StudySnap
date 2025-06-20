@@ -133,6 +133,18 @@ body {
   justify-content: center;
   gap: var(--spacing-sm);
 }
+
+.btn-selected {
+  background: var(--color-primary-light);
+  outline: 1px solid #ffffffa0;
+  color: white;
+}
+
+.btn-selected:focus {
+  outline: 1px solid #ffffffa0;
+  outline-offset: 0px;
+}
+
 .card-category {
   padding: var(--spacing-sm) var(--spacing-lg);
   border-radius: var(--radius-md);
@@ -148,6 +160,12 @@ body {
   gap: var(--spacing-sm);
   color: white;
 }
+
+.btn-primary-color {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+}
+
 .btn-primary {
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   color: white;
