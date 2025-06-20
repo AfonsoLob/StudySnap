@@ -5,7 +5,7 @@ import { getMasteryDescription } from '../utils/studyUtils';
 const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, studyProgress }) => {
   const cardBgClasses = darkMode
     ? 'bg-white/10 border border-white/20 text-white'
-    : 'bg-white/30 border border-white/30 text-gray-800';
+    : 'bg-white/20 border border-white/30 text-gray-800';
     
     const BgClasses = darkMode
     ? 'bg-white/10 border border-white/20'
