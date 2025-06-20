@@ -52,7 +52,7 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-2xl mx-auto glass-list p-6">
       <div className="flex items-center mb-6">
         <button
           onClick={onBack}
@@ -69,8 +69,8 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
             onClick={() => setIsBulkMode(false)}
             className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
               !isBulkMode
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700'
+                ? 'btn-selected'
+                : 'bg-gray-600'
             }`}
           >
             Single Card
@@ -79,8 +79,8 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
             onClick={() => setIsBulkMode(true)}
             className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
               isBulkMode
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700'
+                ? 'btn-selected'
+                : 'bg-gray-600'
             }`}
           >
             Bulk Create
@@ -91,19 +91,13 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2">Category</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
-            required
+          <div
+            className={`w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 ${
+              darkMode ? 'bg-white/20' : 'bg-black/20'
+            }`}
           >
-            <option value="">Select a category</option>
-            {categories.map(cat => (
-              <option key={cat.name || cat} value={cat.name || cat}>
-                {cat.name || cat}
-              </option>
-            ))}
-          </select>
+            {category || 'No category selected'}
+          </div>
         </div>
         
         {!isBulkMode ? (
@@ -113,7 +107,7 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
               <textarea
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+                className={`w-full p-3 rounded-lg border border-gray-600 ${darkMode ? 'bg-white/20' : 'bg-black/20'}`}
                 rows={3}
                 required
               />
@@ -123,7 +117,7 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
               <textarea
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
-                className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+                className={`w-full p-3 rounded-lg border border-gray-600 ${darkMode ? 'bg-white/20' : 'bg-black/20'}`}
                 rows={3}
                 required
               />
@@ -135,15 +129,9 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
             <textarea
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent"
+              className={`w-full p-3 rounded-lg border border-gray-600 ${darkMode ? 'bg-white/20' : 'bg-black/20'}`}
               rows={10}
-              placeholder={`Q: What is the capital of France?
-A: Paris
-
-Q: What is 2 + 2?
-A: 4
-
-(Each card should start with Q: for question and A: for answer)`}
+              placeholder={`Q: What is the capital of France?\nA: Paris\n\nQ: What is 2 + 2?\nA: 4\n\n(Each card should start with Q: for question and A: for answer)`}
               required
             />
           </div>
@@ -151,7 +139,7 @@ A: 4
 
         <button
           type="submit"
-          className="w-full py-3 px-6 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="w-full py-3 px-6 bg-[#764ba2] text-white rounded-lg hover:bg-[#8557b2] transition-colors"
         >
           {isBulkMode ? 'Create Cards' : 'Create Card'}
         </button>
