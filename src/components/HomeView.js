@@ -48,7 +48,7 @@ const HomeView = ({
         {!showCategoryForm && (
           <button
             onClick={() => setShowCategoryForm(true)}
-            className="create-btn flex items-center gap-3 bg-white/10 border-2 border-white/20 backdrop-blur-lg text-white px-8 py-4 rounded-2xl font-semibold text-base transition-all hover:bg-white/20 hover:border-white/30 shadow-lg"
+            className="btn flex items-center bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-emerald-500 hover:to-green-600 border-2 border-white/20 backdrop-blur-lg rounded-2xl font-semibold text-base transition-all hover:bg-white/20 hover:border-white/30 ml-auto"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd"></path>
@@ -94,7 +94,7 @@ const HomeView = ({
               <div className="flex flex-row gap-3 sm:flex-row w-full sm:w-auto">
                 <button
                   type="submit"
-                  className="btn btn-add py-3 px-5 bg-gradient-to-r from-green-400 to-emerald-600 text-white rounded-xl font-semibold shadow-md transition-all hover:from-emerald-500 hover:to-green-600 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+                  className="btn btn-add py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold shadow-md transition-all hover:from-emerald-500 hover:to-green-600 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
                   disabled={!newCategory.trim()}
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
