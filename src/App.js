@@ -11,6 +11,7 @@ import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from './components/AuthForm';
 import { extractTextFromPDF, generateFlashcards } from './utils/aiUtils';
+import { NotificationPortal } from './utils/NotificationPortal'
 import { calculateCategoryStreak } from './utils/studyUtils';
 import './styles/base.css';
 import {
@@ -50,6 +51,7 @@ const App = () => {
   const settingsModalRef = useRef(null);
   const [studyProgress, setStudyProgress] = useState({});
   const [categoryStats, setCategoryStats] = useState({});
+  const [showCategorySuccess, setShowCategorySuccess] = useState(false);
 
   // Helper function to safely get category name
   const getCategoryName = (category) => {
@@ -232,6 +234,8 @@ const App = () => {
     if (name && !categories.some(cat => cat.name === name)) {
       const catRef = collection(db, 'users', user.uid, 'categories');
       await addDoc(catRef, { name, createdAt: serverTimestamp() });
+      setShowCategorySuccess(true);
+      setTimeout(() => setShowCategorySuccess(false), 2000);
     }
   };
 
@@ -516,6 +520,15 @@ const App = () => {
       }}
       data-theme={darkMode ? 'dark' : undefined}
     >
+      <NotificationPortal>
+        {showCategorySuccess && (
+          <div className="fixed bottom-8 right-8 z-[9999] pointer-events-none flex justify-end w-auto">
+            <div className="bg-green-500/90 text-white px-6 py-3 rounded-xl shadow-lg font-semibold text-base animate-fadeIn pointer-events-auto">
+              Category created successfully!
+            </div>
+          </div>
+        )}
+      </NotificationPortal>
       <Header 
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
@@ -576,7 +589,7 @@ const App = () => {
       />
 
       <main className="container mx-auto px-4 py-8">
-        {currentView === 'home' && <HomeView {...commonProps} />}
+        {currentView === 'home' && <HomeView {...commonProps} addCategory={addCategory} />}
         {currentView === 'category' && selectedCategory && (
           <CategoryView {...commonProps} selectedCategory={selectedCategory} />
         )}

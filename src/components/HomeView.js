@@ -8,7 +8,6 @@ const HomeView = ({
   darkMode, 
   categories,
   setSelectedCategory,
-  flashcards, 
   setCurrentView, 
   addCategory,
   deleteCategory,
@@ -41,68 +40,115 @@ const HomeView = ({
 
   return (
     <div className="space-y-6">
-      <div className="section-header">
-        <h2>Your Study Categories</h2>
-        <p className="section-subtitle">Master your subjects with organized flashcard collections</p>
+      <div className="header text-center py-10">
+        <h2 className="text-4xl font-bold mb-2 text-white">Your Study Categories</h2>
+        <p className="text-lg text-white/80 font-normal">Master your subjects with organized flashcard collections</p>
       </div>
-      <div className="flex justify-end items-center mb-6">
-        <button
-          onClick={() => setShowCategoryForm(true)}
-          className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium"
-        >
-          + Create Category
-        </button>
+      <div className="flex px-3 justify-center mb-8 items-start">
+        {!showCategoryForm && (
+          <button
+            onClick={() => setShowCategoryForm(true)}
+            className="create-btn flex items-center gap-3 bg-white/10 border-2 border-white/20 backdrop-blur-lg text-white px-8 py-4 rounded-2xl font-semibold text-base transition-all hover:bg-white/20 hover:border-white/30 shadow-lg"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd"></path>
+            </svg>
+            Create Category
+          </button>
+        )}
+        {showCategoryForm && (
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              addCategory(newCategory);
+              setNewCategory('');
+              setShowCategoryForm(false);
+            }}
+            className="category-form active bg-white/10 backdrop-blur-2xl border-2 border-white/20 rounded-2xl p-2 max-w-3xl w-full animate-fadeIn"
+            style={{ animation: 'fadeIn 0.3s' }}
+          >
+            <div
+              className="
+                form-content
+                w-full
+                flex-col
+                sm:flex-row
+                flex
+                gap-3
+                sm:w-[100%]
+                mx-auto
+              "
+            >
+              <input
+                ref={inputRef}
+                type="text"
+                value={newCategory}
+                onChange={e => setNewCategory(e.target.value)}
+                placeholder="Enter category name..."
+                maxLength={50}
+                className="form-input flex py-2 px-5 bg-white/10 border-2 border-white/20 rounded-xl text-white text-base placeholder-white/60 focus:outline-none focus:border-white/40 focus:bg-white/20 focus:shadow-lg transition-all w-full"
+                required
+                onKeyDown={e => { if (e.key === 'Escape') { setShowCategoryForm(false); setNewCategory(''); } }}
+              />
+              {/* Desktop/tablet: buttons inline, mobile: buttons below input */}
+              <div className="flex flex-row gap-3 sm:flex-row w-full sm:w-auto">
+                <button
+                  type="submit"
+                  className="btn btn-add py-3 px-5 bg-gradient-to-r from-green-400 to-emerald-600 text-white rounded-xl font-semibold shadow-md transition-all hover:from-emerald-500 hover:to-green-600 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed w-full sm:w-auto"
+                  disabled={!newCategory.trim()}
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd"></path>
+                  </svg>
+                  Add
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-cancel py-3 px-5 bg-white/10 border-2 border-white/20 text-white rounded-xl font-semibold transition-all hover:bg-white/15 hover:border-white/30 flex items-center justify-center gap-2 w-full sm:w-auto"
+                  onClick={() => { setShowCategoryForm(false); setNewCategory(''); }}
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                  </svg>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
       </div>
-      {showCategoryForm && (
-        <form
-          onSubmit={e => { e.preventDefault(); addCategory(newCategory); setNewCategory(''); setShowCategoryForm(false); }}
-          className="mb-4 flex space-x-2"
-        >
-          <input
-            ref={inputRef}
-            type="text"
-            value={newCategory}
-            onChange={e => setNewCategory(e.target.value)}
-            placeholder="Category name"
-            className={`px-3 py-2 ${darkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-            required
-          />
-          <button type="submit" className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium">Add</button>
-          <button type="button" onClick={() => setShowCategoryForm(false)} className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-medium">Cancel</button>
-        </form>
-      )}
-      <div className="categories-grid">
+      <div className="categories-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
         {sortedCategories.map(cat => (
           <div
             key={cat.id || cat.name}
-            className="category-card"
+            className="category-card bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 transition-all hover:-translate-y-1 hover:bg-white/15 cursor-pointer shadow-lg relative"
             onClick={() => {
               setSelectedCategory(cat);
               setCurrentView('category');
             }}
           >
             <button
-              className="delete-btn"
+              className="delete-btn absolute top-3 right-3 text-white/60 hover:text-red-400 text-xl font-bold z-10 bg-transparent"
               title="Delete category"
               onClick={e => { e.stopPropagation(); if(window.confirm(`Delete category '${cat.name}' and all its cards?`)) deleteCategory(cat.name); }}
             >
               ×
             </button>
-            <h3 className="category-title">{cat.name}</h3>
-            <div className="category-meta">
+            <h3 className="category-title text-xl font-semibold mb-2 text-white">{cat.name}</h3>
+            <div className="category-meta text-white/70 text-sm mb-2">
               {categoryStats[cat.name]?.totalCards || 0} cards • {formatTimeAgo(categoryStats[cat.name]?.lastStudied)}
             </div>
-            <div className="category-stats">
+            <div className="category-stats flex gap-6 mt-2">
               <div className="stat-item">
-                <div className="stat-number">{categoryStats[cat.name]?.mastery || 0}%</div>
-                <div className="stat-label">Mastery</div>
+                <div className="stat-number text-lg font-bold text-emerald-300">{categoryStats[cat.name]?.mastery || 0}%</div>
+                <div className="stat-label text-xs text-white/60">Mastery</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number">{categoryStats[cat.name]?.streak || 0}</div>
-                <div className="stat-label">Streak</div>
+                <div className="stat-number text-lg font-bold text-indigo-200">{categoryStats[cat.name]?.streak || 0}</div>
+                <div className="stat-label text-xs text-white/60">Streak</div>
               </div>
             </div>
-            <svg className="progress-ring" viewBox="0 0 50 50">
+            <svg className="progress-ring absolute bottom-4 right-4" width="40" height="40" viewBox="0 0 50 50">
               <circle
                 className="progress-ring-circle"
                 cx="25"
