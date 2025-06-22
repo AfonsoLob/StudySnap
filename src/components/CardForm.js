@@ -8,7 +8,6 @@ const CardForm = ({
   onCancel, 
   submitText, 
   darkMode,
-  categories,
   selectedCategory
 }) => {
 

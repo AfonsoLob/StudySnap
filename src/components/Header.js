@@ -1,6 +1,6 @@
 // src/components/Header.js
 import React from 'react';
-import { BookOpen, Sun, Moon, Settings } from 'lucide-react';
+import { Sun, Moon, Settings } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import logo from '../assets/logoSnap.png';

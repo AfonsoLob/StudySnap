@@ -10,33 +10,30 @@ const StudyControls = ({
   onDifficultyRating, 
   darkMode 
 }) => {
-  const BgClasses = darkMode
-    ? 'bg-white/10 border border-white/20'
-    : 'bg-white/10 border border-white/20';
 
   return (
     <div className="space-y-6">
       {!isFlipped ? (
         <div className="action-buttons">
-          <button
-            onClick={onPrevious}
+        <button
+          onClick={onPrevious}
             className="btn btn-secondary"
-          >
+        >
             ← Previous
-          </button>
-          <button
-            onClick={onFlip}
+        </button>
+        <button
+          onClick={onFlip}
             className="btn btn-primary"
-          >
+        >
             Show Answer
-          </button>
-          <button
-            onClick={onNext}
+        </button>
+        <button
+          onClick={onNext}
             className="btn btn-secondary"
-          >
+        >
             Next →
-          </button>
-        </div>
+        </button>
+      </div>
       ) : (
         <div className="knowledge-rating flex justify-center gap-2">
           {[1, 2, 3, 4, 5].map((rating) => (
