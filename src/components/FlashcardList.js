@@ -11,7 +11,6 @@ const FlashcardList = ({
   onStudy,
   onAI
 }) => {
-  const cardBgClasses = darkMode ? 'bg-gray-700' : 'bg-white';
 
   return (
     <div className={`glass-list rounded-2xl shadow-lg`}>
