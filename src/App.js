@@ -10,8 +10,8 @@ import AIModal from './components/AIModal';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from './components/AuthForm';
-import { extractTextFromPDF, generateFlashcards } from './utils/aiUtils';
-import { NotificationPortal } from './utils/NotificationPortal'
+import { generateFlashcards } from './utils/aiUtils';
+import NotificationPortal from './utils/NotificationPortal'
 import { calculateCategoryStreak } from './utils/studyUtils';
 import './styles/base.css';
 import {
@@ -375,8 +375,6 @@ const App = () => {
       // First rating
       newMastery = basePercentage;
     } else {
-      // Increment by 2 points for each press of the same rating
-      const currentMastery = currentProgress.mastery;
       
       // Count how many times this rating was given before
       const previousRatings = currentProgress.ratingHistory || [];
@@ -502,10 +500,6 @@ const App = () => {
     setCurrentView,
     categories
   };
-
-  const themeClasses = darkMode 
-    ? 'bg-gray-800 text-gray-100' 
-    : 'bg-gray-50 text-gray-900';
 
   return (
     <div

@@ -1,11 +1,8 @@
 // src/components/HomeView.js
 import React, { useRef, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
 import { formatTimeAgo } from '../utils/studyUtils';
 
 const HomeView = ({ 
-  darkMode, 
   categories,
   setSelectedCategory,
   setCurrentView, 
