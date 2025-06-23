@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import logo from '../assets/logoSnap.png'
 
 const AuthForm = ({ user }) => {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const AuthForm = ({ user }) => {
         {/* Brand Section */}
         <div className="brand-section text-center mb-8">
           <img
-            src={require('../assets/logoSnap.png')}
+            src={logo}
             alt="StudySnap Logo"
             className="brand-icon w-16 h-16 rounded-full mb-4 mx-auto object-cover shadow-lg"
           />
