@@ -83,7 +83,7 @@ export async function generateFlashcards(input, apiKey, selectedCategory) {
         { role: 'system', content: 'You are a helpful assistant that creates flashcards.' },
         { role: 'user', content: prompt }
       ],
-      max_tokens: 2000
+      max_tokens: 3000
     })
   });
 
