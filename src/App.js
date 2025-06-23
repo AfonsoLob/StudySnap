@@ -11,7 +11,6 @@ import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AuthForm from './components/AuthForm';
 import { generateFlashcards } from './utils/aiUtils';
-import NotificationPortal from './utils/NotificationPortal'
 import { calculateCategoryStreak } from './utils/studyUtils';
 import './styles/base.css';
 import {
@@ -51,7 +50,7 @@ const App = () => {
   const settingsModalRef = useRef(null);
   const [studyProgress, setStudyProgress] = useState({});
   const [categoryStats, setCategoryStats] = useState({});
-  const [showCategorySuccess, setShowCategorySuccess] = useState(false);
+  const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
 
   // Helper function to safely get category name
   const getCategoryName = (category) => {
@@ -234,8 +233,7 @@ const App = () => {
     if (name && !categories.some(cat => cat.name === name)) {
       const catRef = collection(db, 'users', user.uid, 'categories');
       await addDoc(catRef, { name, createdAt: serverTimestamp() });
-      setShowCategorySuccess(true);
-      setTimeout(() => setShowCategorySuccess(false), 2000);
+      showNotification('Category created successfully!', 'success');
     }
   };
 
@@ -257,6 +255,7 @@ const App = () => {
     });
     setSelectedCategory(null);
     setCurrentView('home');
+    showNotification(`Category "${name}" deleted successfully!`, 'success');
   };
 
   // Add new flashcard (Firestore)
@@ -270,6 +269,7 @@ const App = () => {
       const cardRef = collection(db, 'users', user.uid, 'flashcards');
       await addDoc(cardRef, card);
       setCurrentView(selectedCategory ? 'category' : 'home');
+      showNotification('Flashcard created successfully!', 'success');
     }
   };
 
@@ -279,12 +279,14 @@ const App = () => {
     await setDoc(cardRef, updatedCard);
     setEditingCard(null);
     setCurrentView('home');
+    showNotification('Flashcard updated successfully!', 'success');
   };
 
   // Delete flashcard (Firestore)
   const deleteFlashcard = async (id) => {
     const cardRef = doc(db, 'users', user.uid, 'flashcards', id);
     await deleteDoc(cardRef);
+    showNotification('Flashcard deleted successfully!', 'success');
   };
 
   // Start studying (by category)
@@ -338,6 +340,7 @@ const App = () => {
     const settingsRef = doc(db, 'users', user.uid, 'settings', 'ai');
     await setDoc(settingsRef, { apiKey: key });
     setApiKey(key);
+    showNotification('API key saved successfully!', 'success');
   };
 
   // Handle difficulty rating and update study progress
@@ -441,11 +444,19 @@ const App = () => {
       setShowAIModal(false);
       setAIText('');
       setAIFile(null);
+      showNotification(`Successfully created ${cards.length} flashcards!`, 'success');
     } catch (err) {
       setAIError(err.message);
+      showNotification(`AI generation failed: ${err.message}`, 'error');
     } finally {
       setAILoading(false);
     }
+  };
+
+  // Helper function to show notifications
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
   };
 
   // Common props to pass down
@@ -502,96 +513,102 @@ const App = () => {
   };
 
   return (
-    <div
-      className={`app-bg min-h-screen transition-colors duration-300 `}
-      style={{
-        // Ensure glassmorphism effect overlays the gradient
-        backgroundColor: darkMode
-          ? 'rgba(31,41,55,0.7)'
-          : 'rgba(255,255,255,0.7)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-      }}
-      data-theme={darkMode ? 'dark' : undefined}
-    >
-      <NotificationPortal>
-        {showCategorySuccess && (
-          <div className="fixed bottom-8 right-8 z-[9999] pointer-events-none flex justify-end w-auto">
-            <div className="bg-green-500/90 text-white px-6 py-3 rounded-xl shadow-lg font-semibold text-base animate-fadeIn pointer-events-auto">
-              Category created successfully!
-            </div>
-          </div>
-        )}
-      </NotificationPortal>
-      <Header 
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        setCurrentView={setCurrentView}
-        user={user}
-        onShowSettings={() => setShowSettings(true)}
-      />
-
-      {showSettings && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm" style={{ pointerEvents: 'auto' }}>
-          <div
-            ref={settingsModalRef}
-            className="glass-list p-8 max-w-md w-full absolute left-1/2 flex flex-col items-center justify-center"
-            style={{
-              top: modalTop,
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
-          >
-            <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl transition-colors"
-              onClick={() => setShowSettings(false)}
-            >
-              ×
-            </button>
-            <h2 className="text-xl font-bold mb-4">AI API Key</h2>
-            <input
-              type="text"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="w-full p-2 mb-4 rounded-md border border-gray-300 dark:border-gray-600 bg-transparent"
-              placeholder="Enter your API key"
-            />
-            <button
-              onClick={() => {
-                saveApiKey(apiKey);
-                setShowSettings(false);
-              }}
-              className="btn btn-primary w-full"
-            >
-              Save
-            </button>
+    <>
+      {notification.show && (
+        <div className="notification-container">
+          <div className={`notification px-6 py-3 rounded-xl shadow-lg font-semibold text-base animate-fadeIn ${
+            notification.type === 'success' 
+              ? 'bg-green-500/90 text-white' 
+              : notification.type === 'error'
+              ? 'bg-red-500/90 text-white'
+              : 'bg-blue-500/90 text-white'
+          }`}>
+            {notification.message}
           </div>
         </div>
       )}
+      <div
+        className={`app-bg min-h-screen transition-colors duration-300 `}
+        style={{
+          // Ensure glassmorphism effect overlays the gradient
+          backgroundColor: darkMode
+            ? 'rgba(31,41,55,0.7)'
+            : 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
+        data-theme={darkMode ? 'dark' : undefined}
+      >
+        <Header 
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+          setCurrentView={setCurrentView}
+          user={user}
+          onShowSettings={() => setShowSettings(true)}
+        />
 
-      <AIModal
-        showAIModal={showAIModal}
-        setShowAIModal={setShowAIModal}
-        aiText={aiText}
-        setAIText={setAIText}
-        aiFile={aiFile}
-        setAIFile={setAIFile}
-        aiLoading={aiLoading}
-        aiError={aiError}
-        aiSuccess={aiSuccess}
-        handleAIGenerate={handleAIGenerate}
-      />
-
-      <main className="container mx-auto px-4 py-8">
-        {currentView === 'home' && <HomeView {...commonProps} addCategory={addCategory} />}
-        {currentView === 'category' && selectedCategory && (
-          <CategoryView {...commonProps} selectedCategory={selectedCategory} />
+        {showSettings && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm" style={{ pointerEvents: 'auto' }}>
+            <div
+              ref={settingsModalRef}
+              className="glass-list p-8 max-w-md w-full absolute left-1/2 flex flex-col items-center justify-center"
+              style={{
+                top: modalTop,
+                left: '50%',
+                transform: 'translateX(-50%)',
+              }}
+            >
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl transition-colors"
+                onClick={() => setShowSettings(false)}
+              >
+                ×
+              </button>
+              <h2 className="text-xl font-bold mb-4">AI API Key</h2>
+              <input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="w-full p-2 mb-4 rounded-md border border-gray-300 dark:border-gray-600 bg-transparent"
+                placeholder="Enter your API key"
+              />
+              <button
+                onClick={() => {
+                  saveApiKey(apiKey);
+                  setShowSettings(false);
+                }}
+                className="btn btn-primary w-full"
+              >
+                Save
+              </button>
+            </div>
+          </div>
         )}
-        {currentView === 'create' && <CreateView {...createProps} />}
-        {currentView === 'study' && <StudyView {...studyProps} />}
-        {currentView === 'edit' && <EditView {...editProps} />}
-      </main>
-    </div>
+
+        <AIModal
+          showAIModal={showAIModal}
+          setShowAIModal={setShowAIModal}
+          aiText={aiText}
+          setAIText={setAIText}
+          aiFile={aiFile}
+          setAIFile={setAIFile}
+          aiLoading={aiLoading}
+          aiError={aiError}
+          aiSuccess={aiSuccess}
+          handleAIGenerate={handleAIGenerate}
+        />
+
+        <main className="container mx-auto px-4 py-8">
+          {currentView === 'home' && <HomeView {...commonProps} addCategory={addCategory} />}
+          {currentView === 'category' && selectedCategory && (
+            <CategoryView {...commonProps} selectedCategory={selectedCategory} />
+          )}
+          {currentView === 'create' && <CreateView {...createProps} />}
+          {currentView === 'study' && <StudyView {...studyProps} />}
+          {currentView === 'edit' && <EditView {...editProps} />}
+        </main>
+      </div>
+    </>
   );
 };
 

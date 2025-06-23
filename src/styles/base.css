@@ -257,6 +257,10 @@ h6 { font-size: 1rem; }
   animation: slideUp var(--transition-normal);
 }
 
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 /* Utility Classes */
 .text-primary {
   color: var(--color-primary);
@@ -527,7 +531,19 @@ h6 { font-size: 1rem; }
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Notification styles */
+.notification-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+.notification {
+  pointer-events: auto;
+  max-width: 20rem;
+  word-wrap: break-word;
+  position: relative;
 }
