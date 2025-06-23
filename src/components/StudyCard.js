@@ -1,8 +1,8 @@
 // src/components/StudyCard.js
-import React from 'react';
+import React, { useRef } from 'react';
 import { getMasteryDescription } from '../utils/studyUtils';
 
-const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, studyProgress }) => {
+const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, studyProgress, onNext, onPrevious }) => {
   const cardBgClasses = darkMode
     ? 'bg-white/10 border border-white/20 text-white'
     : 'bg-white/20 border border-white/30 text-gray-800';
@@ -16,10 +16,28 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, 
   const masteryDescription = getMasteryDescription(mastery);
   const masteryPercentage = Math.round(mastery);
 
+  const touchStartX = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX < 0 && onNext) onNext(); // swipe left
+      if (deltaX > 0 && onPrevious) onPrevious(); // swipe right
+    }
+    touchStartX.current = null;
+  };
+
   return (
     <div className="perspective-1000 mb-6">
       <div
         onClick={onFlip}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         className={`
           relative w-full min-h-[300px] p-8 flex items-center justify-center rounded-xl border
           ${cardBgClasses}

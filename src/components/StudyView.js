@@ -44,7 +44,7 @@ const StudyView = ({
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Study Session</h2>
         <button
-          onClick={() => setCurrentView('home')}
+          onClick={() => setCurrentView('category')}
           className="btn btn-end"
         >
           End Session
@@ -60,6 +60,8 @@ const StudyView = ({
         pageNumber={currentCardIndex + 1}
         totalPages={flashcards.length}
         studyProgress={studyProgress}
+        onNext={nextCard}
+        onPrevious={prevCard}
       />
 
       {/* Study Controls */}

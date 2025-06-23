@@ -518,8 +518,57 @@ h6 { font-size: 1rem; }
   gap: 12px;
 }
 
-/* Responsive form-content for create category (HomeView) */
-@media (max-width: 640px) {
+/* Responsiveness */
+@media (max-width: 760px) {
+  .section-title-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title {
+    text-align: center;
+    width: 100%;
+  }
+  .section-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 100%;
+    gap: 8px;
+  }
+  .section-actions button {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+  .flashcard-item-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+  .flashcard-item-actions button {
+    min-width: 44px;
+    margin-bottom: 4px;
+  }
+}
+
+@media (max-width: 610px) {
+  .stats-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+  .stats-bar .stat-item {
+    width: 100%;
+    justify-content: center;
+  }
+  .section-container {
+    padding: 0 4px;
+  }
+
   .form-content {
     flex-direction: column !important;
   }
@@ -528,6 +577,10 @@ h6 { font-size: 1rem; }
   }
   .form-content button {
     width: 100% !important;
+  }
+
+  .action-buttons {
+    display: none;
   }
 }
 
