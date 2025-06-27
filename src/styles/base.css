@@ -619,3 +619,17 @@ h6 { font-size: 1rem; }
   word-wrap: break-word;
   position: relative;
 }
+
+@media (max-width: 480px) { /* Mobile only */
+  .section-actions {
+    flex-direction: column !important;
+    align-items: center;
+    gap: 8px !important;
+    width: 100%;
+  }
+  .section-actions button {
+    width: 220px;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+}
