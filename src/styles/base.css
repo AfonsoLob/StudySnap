@@ -538,18 +538,8 @@ h6 { font-size: 1rem; }
   }
   .section-actions button {
     flex: 1 1 auto;
-    min-width: 0;
+    width: 100%;
     margin-bottom: 0;
-  }
-  .flashcard-item-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: flex-end;
-  }
-  .flashcard-item-actions button {
-    min-width: 44px;
-    margin-bottom: 4px;
   }
 }
 
