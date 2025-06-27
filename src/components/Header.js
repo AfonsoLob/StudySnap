@@ -13,14 +13,14 @@ const Header = ({ darkMode, toggleDarkMode, setCurrentView, user, onShowSettings
             onClick={() => setCurrentView('home')}
             className="flex items-center space-x-3 cursor-pointer group"
           >
-            <div className="w-13 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-105">
+            <div className="max-[420px]:hidden w-13 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center transform transition-transform group-hover:scale-105">
               <img src={logo} alt="StudySnap Logo" className="w-[3.5rem] object-contain" />
             </div>            
             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text drop-shadow-md">
               StudySnap
             </span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center sm:space-x-4">
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-lg transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50"
