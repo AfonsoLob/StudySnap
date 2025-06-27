@@ -528,7 +528,7 @@ const App = () => {
         </div>
       )}
       <div
-        className={`app-bg min-h-screen transition-colors duration-300 `}
+        className={`app-bg min-h-screen flex flex-col transition-colors duration-300 `}
         style={{
           // Ensure glassmorphism effect overlays the gradient
           backgroundColor: darkMode

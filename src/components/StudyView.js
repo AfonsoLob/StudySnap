@@ -39,7 +39,7 @@ const StudyView = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto study-view">
       {/* Study Header */}
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Study Session</h2>
@@ -60,8 +60,6 @@ const StudyView = ({
         pageNumber={currentCardIndex + 1}
         totalPages={flashcards.length}
         studyProgress={studyProgress}
-        onNext={nextCard}
-        onPrevious={prevCard}
       />
 
       {/* Study Controls */}
