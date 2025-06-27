@@ -518,8 +518,47 @@ h6 { font-size: 1rem; }
   gap: 12px;
 }
 
-/* Responsive form-content for create category (HomeView) */
-@media (max-width: 640px) {
+/* Responsiveness */
+@media (max-width: 760px) {
+  .section-title-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title {
+    text-align: center;
+    width: 100%;
+  }
+  .section-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 100%;
+    gap: 8px;
+  }
+  .section-actions button {
+    flex: 1 1 auto;
+    width: 100%;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 610px) {
+  .stats-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+  .stats-bar .stat-item {
+    width: 100%;
+    justify-content: center;
+  }
+  .section-container {
+    padding: 0 4px;
+  }
+
   .form-content {
     flex-direction: column !important;
   }
@@ -528,6 +567,39 @@ h6 { font-size: 1rem; }
   }
   .form-content button {
     width: 100% !important;
+  }
+
+  .study-card-outer {
+    margin-left: 8px;
+    margin-right: 8px;
+    max-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .study-card-inner {
+    min-height: 400px;
+    padding: 1.5rem 1rem;
+    width: 100%;
+    max-width: 420px;
+  }
+  .card-header-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .card-mastery-indicator {
+    position: static !important;
+    margin-top: 2px;
+    font-size: 12px;
+    background: rgba(255,255,255,0.13);
+    padding: 2px 8px;
+  }
+
+  .study-card-outer {
+    margin-top: 20%;
   }
 }
 

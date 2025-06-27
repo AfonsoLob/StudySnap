@@ -39,12 +39,12 @@ const StudyView = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto study-view">
       {/* Study Header */}
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">Study Session</h2>
         <button
-          onClick={() => setCurrentView('home')}
+          onClick={() => setCurrentView('category')}
           className="btn btn-end"
         >
           End Session

@@ -23,7 +23,7 @@ const StudyControls = ({
         </button>
         <button
           onClick={onFlip}
-            className="btn btn-primary"
+            className="max-[610px]:!hidden btn btn-primary outline outline-1 outline-white/30"
         >
             Show Answer
         </button>

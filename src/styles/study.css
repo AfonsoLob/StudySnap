@@ -126,7 +126,9 @@
   justify-content: center;
   gap: 24px;
   margin-bottom: 32px;
-  flex-wrap: wrap;
+}
+.action-buttons button {
+  width: 140px;
 }
 
 .btn-end {
@@ -214,13 +216,4 @@
     font-size: 22px;
   }
 
-  .action-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .btn {
-    width: 100%;
-    max-width: 280px;
-  }
 } 

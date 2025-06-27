@@ -73,7 +73,7 @@ const FlashcardItem = ({ card, darkMode, onEdit, onDelete }) => {
           <p className="font-medium mb-1">{card.front}</p>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{card.category}</p>
         </div>
-        <div className="flex space-x-2 ml-4">
+        <div className="flex space-x-2 ml-4 flashcard-item-actions">
           <button
             onClick={onEdit}
             className={`p-2 text-gray-500 hover:text-indigo-500 transition-colors rounded-lg ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}

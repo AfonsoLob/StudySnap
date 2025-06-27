@@ -1,8 +1,8 @@
 // src/components/StudyCard.js
-import React from 'react';
+import React, { useRef } from 'react';
 import { getMasteryDescription } from '../utils/studyUtils';
 
-const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, studyProgress }) => {
+const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, studyProgress, onNext, onPrevious }) => {
   const cardBgClasses = darkMode
     ? 'bg-white/10 border border-white/20 text-white'
     : 'bg-white/20 border border-white/30 text-gray-800';
@@ -16,11 +16,30 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, 
   const masteryDescription = getMasteryDescription(mastery);
   const masteryPercentage = Math.round(mastery);
 
+  const touchStartX = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX < 0 && onNext) onNext(); // swipe left
+      if (deltaX > 0 && onPrevious) onPrevious(); // swipe right
+    }
+    touchStartX.current = null;
+  };
+
   return (
-    <div className="perspective-1000 mb-6">
+    <div className="study-card-outer perspective-1000 mb-6">
       <div
         onClick={onFlip}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         className={`
+          study-card-inner
           relative w-full min-h-[300px] p-8 flex items-center justify-center rounded-xl border
           ${cardBgClasses}
           shadow-lg cursor-pointer transition-transform duration-500
@@ -42,8 +61,13 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, 
           `}
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className={`card-category ${BgClasses}`}>
-            {card.category}
+          <div className="card-header-mobile">
+            <div className={`card-category ${BgClasses}`}>
+              {card.category}
+            </div>
+            <div className="card-mastery-indicator absolute top-8 right-6 text-xs text-white font-medium bg-white/20 px-2 py-1 rounded">
+              {masteryDescription} {masteryPercentage}%
+            </div>
           </div>
           <div className="flex-1 flex items-center justify-center w-full">
             <div className="text-white font-medium text-xl leading-relaxed mb-4 text-center break-words w-full">
@@ -52,10 +76,6 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, 
           </div>
           <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-200'}`}>
             (Click to reveal answer)
-          </div>
-          {/* Mastery indicator */}
-          <div className="absolute top-8 right-6 text-xs text-white font-medium bg-white/20 px-2 py-1 rounded">
-            {masteryDescription} ({masteryPercentage}%)
           </div>
           {/* Page numbering bottom right */}
           <div className="absolute bottom-8 right-6 text-sm text-white font-medium">
@@ -71,8 +91,13 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, 
           `}
           style={{ transform: 'rotateX(180deg)', backfaceVisibility: 'hidden' }}
         >
-          <div className={`card-category ${BgClasses}`}>
-            {card.category}
+          <div className="card-header-mobile">
+            <div className={`card-category ${BgClasses}`}>
+              {card.category}
+            </div>
+            <div className="card-mastery-indicator absolute top-8 right-6 text-xs text-white font-medium bg-white/20 px-2 py-1 rounded">
+                {masteryDescription} ({masteryPercentage}%)
+            </div>  
           </div>
           <div className="flex-1 flex items-center justify-center w-full">
             <div className="text-white font-medium text-xl leading-relaxed mb-4 text-center break-words w-full">
@@ -81,10 +106,6 @@ const StudyCard = ({ card, isFlipped, onFlip, darkMode, pageNumber, totalPages, 
           </div>
           <div className={`text-sm text-center ${darkMode ? 'text-gray-400' : 'text-gray-200'}`}>
             (Answer)
-          </div>
-          {/* Mastery indicator */}
-          <div className="absolute top-8 right-6 text-xs text-white font-medium bg-white/20 px-2 py-1 rounded">
-            {masteryDescription} ({masteryPercentage}%)
           </div>
           {/* Page numbering bottom right */}
           <div className="absolute bottom-8 right-6 text-sm text-white font-medium">
