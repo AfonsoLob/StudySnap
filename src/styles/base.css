@@ -633,3 +633,11 @@ h6 { font-size: 1rem; }
     margin-bottom: 0;
   }
 }
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #9333ea; /* purple-600 */
+  box-shadow: 0 0 0 2px #c4b5fd; /* purple-400 */
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
