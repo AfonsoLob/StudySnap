@@ -43,9 +43,9 @@ const FlashcardList = ({
       <div className="p-6">
         {flashcards.length === 0 ? (
           <div className="text-center py-8">
-            <BookOpen className={`w-16 h-16 mx-auto mb-4 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`} />
-            <p className={`text-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>No flashcards yet</p>
-            <p className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>Create your first flashcard to get started!</p>
+            <BookOpen className={`w-16 h-16 mx-auto mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-200'}`} />
+            <p className={`text-lg ${darkMode ? 'text-gray-200' : 'text-gray-100'}`}>No flashcards yet</p>
+            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-300'}`}>Create your first flashcard to get started!</p>
           </div>
         ) : (
           <div className="space-y-3">

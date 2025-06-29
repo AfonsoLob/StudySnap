@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { formatTimeAgo } from '../utils/studyUtils';
 
 const HomeView = ({ 
+  darkMode,
   categories,
   setSelectedCategory,
   setCurrentView, 
@@ -114,6 +115,24 @@ const HomeView = ({
           </form>
         )}
       </div>
+      {/* Empty state for no categories */}
+      {sortedCategories.length === 0 && !showCategoryForm && (
+        <div className="text-center py-12">
+          <svg
+            className={`w-16 h-16 mx-auto mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-200'}`}
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              strokeWidth="2"
+              d="M3 7a2 2 0 012-2h4l2 3h6a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
+            />
+          </svg>
+          <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-100'}`}>No categories yet</h3>
+          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-300'}`}>Create your first category to get started organizing your studies!</p>
+        </div>
+      )}
       <div className="categories-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
         {sortedCategories.map(cat => (
           <div
