@@ -9,7 +9,6 @@ const AIModal = ({
   setAIFile,
   aiLoading,
   aiError,
-  aiSuccess,
   handleAIGenerate
 }) => {
   const modalRef = useRef(null);
@@ -153,7 +152,6 @@ const AIModal = ({
         </div>
 
         {aiError && <div className="text-red-500 mb-4">{aiError}</div>}
-        {aiSuccess && <div className="text-green-500 mb-4">{aiSuccess}</div>}
 
         <button
           className="btn btn-primary w-full"
