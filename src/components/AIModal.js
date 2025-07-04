@@ -9,7 +9,6 @@ const AIModal = ({
   setAIFile,
   aiLoading,
   aiError,
-  aiSuccess,
   handleAIGenerate
 }) => {
   const modalRef = useRef(null);
@@ -77,7 +76,7 @@ const AIModal = ({
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm" style={{ pointerEvents: 'auto' }}>
       <div
         ref={modalRef}
-        className="glass-list p-8 max-w-md w-full absolute left-1/2 flex flex-col items-center justify-center"
+        className="glass-list px-12 py-8 max-w-md w-full absolute left-1/2 flex flex-col items-center justify-center"
         style={{
           top: modalTop,
           left: '50%',
@@ -90,9 +89,9 @@ const AIModal = ({
         >
           ×
         </button>
-        <h2 className="text-xl font-bold mb-4">Generate Flashcards with AI</h2>
+        <h2 className="text-2xl font-bold mb-6">Generate Flashcards with AI</h2>
         
-        <div className="mb-6">
+        <div className="w-full mb-6">
           <label className="block font-medium mb-2">Option 1: Upload a file</label>
           {aiFile ? (
             <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
@@ -100,7 +99,7 @@ const AIModal = ({
                 <svg className="w-5 h-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-                <span className="text-sm text-gray-700 dark:text-gray-300">{aiFile.name}</span>
+                <span className="text-sm truncate block sm:max-w-[220px] max-w-[160px] text-gray-700 dark:text-gray-300">{aiFile.name}</span>
               </div>
               <button
                 onClick={handleRemoveFile}
@@ -112,7 +111,7 @@ const AIModal = ({
           ) : (
             <div className="flex items-center justify-center w-full">
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500">
-                <div className="flex flex-col mx-6 items-center justify-center pt-5 pb-6">
+                <div className="flex flex-col mx-12 items-center justify-center pt-5 pb-6">
                   <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                   </svg>
@@ -132,10 +131,14 @@ const AIModal = ({
           )}
         </div>
 
-        <div className="mb-6">
-          <label className="block font-medium mb-2">Option 2: Paste text</label>
+        <div className="mb-6 w-full">
+          <label className="block font-medium mb-2">Option 2: Paste content</label>
           <textarea
-            className="w-full p-6 rounded-md border border-gray-300 dark:border-gray-600 bg-transparent"
+            className={`w-full p-6 rounded-md border bg-transparent transition-opacity duration-200 ${
+              aiFile
+                ? 'border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800'
+                : 'border-gray-300 dark:border-gray-600'
+            }`}
             rows="6"
             placeholder="Paste your text here..."
             value={aiText}
@@ -149,7 +152,6 @@ const AIModal = ({
         </div>
 
         {aiError && <div className="text-red-500 mb-4">{aiError}</div>}
-        {aiSuccess && <div className="text-green-500 mb-4">{aiSuccess}</div>}
 
         <button
           className="btn btn-primary w-full"
