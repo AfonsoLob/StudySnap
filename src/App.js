@@ -569,7 +569,7 @@ const App = () => {
                 <span className="relative group">
                   <span className="inline-block cursor-pointer w-5 h-5 rounded-full bg-indigo-500 text-white text-xs flex items-center justify-center font-bold">?</span>
                   <span className="absolute left-7 top-1/2 -translate-y-1/2 w-64 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50 pointer-events-auto">
-                    Get a free API key at <a href="https://aimlapi.com" target="_blank" rel="noopener noreferrer" className="underline text-indigo-300">aimlapi.com</a>.<br/>
+                    Get a free API key at <a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline text-indigo-300">aistudio.google.com</a>.<br/>
                     After signing up, copy your key from the dashboard and paste it here.
                   </span>
                 </span>

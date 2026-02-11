@@ -1,4 +1,5 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import { GoogleGenAI } from "@google/genai"
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdfjs/pdf.worker.min.mjs`;
 
@@ -66,57 +67,59 @@ export async function generateFlashcards(input, apiKey, selectedCategory) {
     throw new Error('No content provided.');
   }
 
-  // Prompt for AI
-  const prompt = `Generate flashcards from the following text. Format each as:\nQ: <question>\nA: <answer>\n---\n${inputText}`;
-  
-  // Use AIMLAPI endpoint
-  const AI_API_URL = 'https://api.aimlapi.com/v1/chat/completions';
-  const response = await fetch(AI_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant that creates flashcards.' },
-        { role: 'user', content: prompt }
-      ],
-      max_tokens: 3000
-    })
-  });
+  // Google GEN AI
+  try {
+    const ai = new GoogleGenAI({ apiKey: apiKey });
 
-  if (!response.ok) {
-    let errorMsg = 'AI API error';
-    try {
-      const errorData = await response.json();
-      if (errorData.error && errorData.error.message) {
-        errorMsg += ': ' + errorData.error.message;
-      } else {
-        errorMsg += ` (${response.status} ${response.statusText})`;
-      }
-    } catch {
-      errorMsg += ` (${response.status} ${response.statusText})`;
+    async function main() {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: inputText,
+        config: {
+          systemInstruction: `
+          You are a helpful assistant that creates flashcards.
+          Generate flashcards from the text provided below.
+        
+          STRICT FORMATTING RULES:
+          1. Use exactly the format:
+            Q: <question>
+            A: <answer>
+            ---
+          2. Do not add bolding, markdown, or numbering.
+          3. Separate every card with "---".
+        `,
+        },
+      });
+      return response.text;
     }
-    throw new Error(errorMsg);
-  }
 
-  const data = await response.json();
-  const aiOutput = data.choices[0].message.content;
-  console.log(aiOutput);
-  
-  // Parse flashcards from AI output
-  const cards = [];
-  const regex = /Q:\s*(.*?)\nA:\s*(.*?)\n---/gs;
-  let match;
-  while ((match = regex.exec(aiOutput)) !== null) {
-    cards.push({ front: match[1].trim(), back: match[2].trim(), category: selectedCategory });
-  }
+    const aiOutput = await main();
+    console.log(aiOutput);
 
-  if (cards.length === 0) {
-    throw new Error('No flashcards found in AI response.');
-  }
+    // Parse flashcards
+    const cards = [];
+    // Updated regex to be slightly more robust to extra newlines
+    const regex = /Q:\s*([\s\S]*?)\nA:\s*([\s\S]*?)\n---/g;
+    
+    let match;
+    while ((match = regex.exec(aiOutput)) !== null) {
+      cards.push({ 
+        front: match[1].trim(), 
+        back: match[2].trim(), 
+        category: selectedCategory 
+      });
+    }
 
-  return cards;
-} 
+    if (cards.length === 0) {
+      console.warn("Regex match failed. Dumping output for debugging:", aiOutput);
+      throw new Error('No flashcards found in AI response. The text might be too short or the format was not followed.');
+    }
+
+    return cards;
+
+  } catch (error) {
+      console.error("Gemini API Error:", error);
+      // Error message for UI
+      throw new Error(`AI Generation failed: ${error.message}`);
+    }
+}
