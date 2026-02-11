@@ -45,7 +45,6 @@ const App = () => {
   const [aiFile, setAIFile] = useState(null);
   const [aiLoading, setAILoading] = useState(false);
   const [aiError, setAIError] = useState('');
-  const [aiSuccess, setAISuccess] = useState('');
   const [modalTop, setModalTop] = useState(0);
   const settingsModalRef = useRef(null);
   const [studyProgress, setStudyProgress] = useState({});
@@ -430,7 +429,6 @@ const App = () => {
   const handleAIGenerate = async () => {
     setAILoading(true);
     setAIError('');
-    setAISuccess('');
     try {
       const input = aiFile || aiText;
       const categoryName = getCategoryName(selectedCategory);
@@ -440,7 +438,6 @@ const App = () => {
       for (const card of cards) {
         await addDoc(cardRef, card);
       }
-      setAISuccess(`Created ${cards.length} flashcards!`);
       setShowAIModal(false);
       setAIText('');
       setAIFile(null);

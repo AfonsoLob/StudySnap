@@ -7,8 +7,9 @@ const CreateView = ({ darkMode, onBack, addFlashcard, selectedCategory, categori
   const [back, setBack] = useState('');
   const [isBulkMode, setIsBulkMode] = useState(false);
   const [bulkText, setBulkText] = useState('');
-  const [category, setCategory] = useState(selectedCategory || '');
-
+  //const [category, setCategory] = useState(selectedCategory || '');
+  const category = selectedCategory || '';
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isBulkMode) {
